@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智谱 (02513.HK) 深度分析</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#0d1117;color:#c9d1d9;}
+.header{background:linear-gradient(135deg,#161b22,#0d1117);border-bottom:1px solid #21262d;padding:18px 32px 12px;text-align:center;}
+.header h1{font-size:28px;font-weight:700;margin-bottom:4px;background:linear-gradient(90deg,#e74c3c,#f39c12);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header .subtitle{font-size:12px;color:#6e7681;}
+.advice-section{max-width:1200px;margin:16px auto;padding:0 16px;}
+.advice-card{background:linear-gradient(135deg,#1a0a0a,#0d1117);border:2px solid #e74c3c;border-radius:10px;padding:20px 24px;margin-bottom:14px;}
+.advice-card h2{font-size:20px;color:#e74c3c;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.advice-card h2 .badge{background:#e74c3c;color:#fff;font-size:14px;padding:2px 10px;border-radius:4px;}
+.advice-card .disclaimer{font-size:12px;color:#e74c3c;margin-bottom:14px;padding:8px 12px;background:rgba(231,76,60,0.1);border-radius:6px;}
+.advice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px;}
+.advice-item{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 16px;}
+.advice-item .ai-title{font-size:12px;color:#6e7681;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.advice-item .ai-value{font-size:18px;font-weight:700;}
+.advice-item .ai-detail{font-size:12px;color:#6e7681;margin-top:4px;line-height:1.5;}
+.levels-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px;}
+.levels-table th{text-align:left;padding:6px 10px;color:#6e7681;font-size:11px;border-bottom:1px solid #21262d;}
+.levels-table td{padding:6px 10px;border-bottom:1px solid #1a1f29;}
+.signal-bar{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;padding:10px 24px;background:#161b22;border-bottom:1px solid #21262d;}
+.signal-card{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:8px 16px;text-align:center;min-width:120px;}
+.signal-card .label{font-size:11px;color:#6e7681;margin-bottom:3px;}
+.signal-card .value{font-size:14px;font-weight:600;}
+.up{color:#e74c3c;}.down{color:#2ecc71;}
+.stats{display:flex;justify-content:center;gap:24px;padding:10px 24px;background:#161b22;border-bottom:1px solid #21262d;flex-wrap:wrap;}
+.stat-item{text-align:center;}
+.stat-val{font-size:20px;font-weight:700;margin-bottom:1px;}
+.stat-lbl{font-size:11px;color:#6e7681;}
+.container{max-width:1440px;margin:0 auto;padding:8px 12px;}
+.chart-box{background:#161b22;border-radius:8px;border:1px solid #21262d;padding:10px;margin-bottom:8px;}
+#kline-chart{width:100%;height:500px;}
+#vol-chart{width:100%;height:160px;}
+#macd-chart{width:100%;height:200px;}
+.analysis-section{max-width:1200px;margin:20px auto;padding:0 16px;}
+.analysis-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:20px 24px;margin-bottom:14px;line-height:1.8;font-size:14px;}
+.analysis-card h3{font-size:18px;color:#f39c12;margin-bottom:12px;border-bottom:1px solid #21262d;padding-bottom:8px;}
+.analysis-card h4{color:#e67e22;margin:14px 0 6px;font-size:15px;}
+.analysis-card p{margin-bottom:10px;}
+.analysis-card ul,.analysis-card ol{margin:8px 0 8px 20px;}
+.analysis-card li{margin-bottom:4px;}
+.analysis-card .highlight{color:#e74c3c;font-weight:600;}
+.analysis-card .warn{color:#2ecc71;font-weight:600;}
+.analysis-card code{background:#0d1117;padding:1px 6px;border-radius:3px;font-size:13px;color:#a29bfe;}
+.analysis-card table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;}
+.analysis-card table th{text-align:left;padding:6px 10px;background:#0d1117;color:#6e7681;font-size:11px;}
+.analysis-card table td{padding:6px 10px;border-bottom:1px solid #1a1f29;}
+.analysis-card .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;margin:2px;}
+.tag-bull{background:rgba(231,76,60,0.2);color:#e74c3c;}
+.tag-bear{background:rgba(46,204,113,0.2);color:#2ecc71;}
+.footer{text-align:center;padding:14px;color:#484f58;font-size:11px;border-top:1px solid #21262d;margin-top:6px;}
+@media(max-width:768px){
+  .header h1{font-size:18px;}
+  .advice-grid{grid-template-columns:1fr;}
+  .signal-card{padding:6px 8px;min-width:80px;}.signal-card .value{font-size:12px;}
+  #kline-chart{height:350px;}#vol-chart{height:120px;}#macd-chart{height:150px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>智谱 &nbsp;02513.HK</h1>
+  <div class="subtitle">深度技术分析 &nbsp;|&nbsp; __DATE_FROM__ ~ __DATE_TO__ &nbsp;|&nbsp; 共 __N_DAYS__ 个交易日</div>
+</div>
+
+<div class="advice-section">
+  <div class="advice-card">
+    <h2><span class="badge">⚠️ 操作建议</span> 6月29日（周一）— 当前空仓</h2>
+    <div class="disclaimer">⚠️ 以下分析基于技术面数据，仅供参考，不构成投资建议。股市有风险，投资需谨慎。智谱为 2026 年新上市港股，波动极大。</div>
+    <div class="advice-grid">
+      <div class="advice-item">
+        <div class="ai-title">核心策略</div>
+        <div class="ai-value" style="color:#f39c12">观望为主，等待波动收敛</div>
+        <div class="ai-detail">上市以来涨幅超 __GAIN_PCT__%，近期从历史高点回调约 __RECENT_DROP_PCT__%，新股高波动特征明显，不宜急于抄底。</div>
+      </div>
+      <div class="advice-item">
+        <div class="ai-title">激进建仓区</div>
+        <div class="ai-value" style="color:#e74c3c">HK$__BB_LOWER_INT__ ~ HK$__MA20_INT__</div>
+        <div class="ai-detail">布林带下轨 + MA20 附近支撑。若放量止跌于此区间，可轻仓试探，仓位不超过 20%。</div>
+      </div>
+      <div class="advice-item">
+        <div class="ai-title">保守建仓条件</div>
+        <div class="ai-value" style="color:#3498db">等待站回 HK$__MA10_INT__ 以上</div>
+        <div class="ai-detail">需同时满足：① 收盘突破 MA10(约 HK$__MA10_INT__) ② MACD 绿柱缩短 ③ 日波幅收窄至 5% 以内。可建仓 30%。</div>
+      </div>
+      <div class="advice-item">
+        <div class="ai-title">止损位</div>
+        <div class="ai-value" style="color:#e74c3c">跌破 HK$__BB_LOWER_INT__ 坚决止损</div>
+        <div class="ai-detail">若跌破布林带下轨且无法收回，下方空间打开，新股无历史支撑参考，亏损可能扩大。</div>
+      </div>
+    </div>
+    <table class="levels-table" style="margin-top:16px;">
+      <tr><th>点位</th><th>价格</th><th>性质</th><th>操作</th></tr>
+      <tr><td style="color:#e74c3c">强阻力</td><td>HK$__ALL_HI__</td><td>历史高点 (6月22日)</td><td>突破前不建议追高</td></tr>
+      <tr><td style="color:#f39c12">阻力</td><td>HK$__MA10_INT__ ~ HK$__ALL_HI__</td><td>MA10 / 前高区域</td><td>收复此区转多头</td></tr>
+      <tr><td style="color:#1abc9c">当前价</td><td>HK$__END_PRICE__</td><td>6月26日收盘</td><td>—</td></tr>
+      <tr><td style="color:#3498db">支撑1</td><td>HK$__MA20_INT__ 附近</td><td>MA20 / 短期均线支撑</td><td>激进建仓区</td></tr>
+      <tr><td style="color:#3498db">支撑2</td><td>HK$__BB_LOWER_INT__</td><td>布林带下轨(20日,2σ)</td><td>强支撑，若跌至此可加仓</td></tr>
+      <tr><td style="color:#2ecc71">强支撑</td><td>HK$1500</td><td>整数关口 + 心理支撑</td><td>极端回调目标</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="signal-bar">
+  <div class="signal-card"><div class="label">均线状态</div><div class="value __MA_ST_CLASS__">__MA_ST__</div></div>
+  <div class="signal-card"><div class="label">MA5/MA10/MA20</div><div class="value">__MA5V__/__MA10V__/__MA20V__</div></div>
+  <div class="signal-card"><div class="label">MACD</div><div class="value __MACD_ST_CLASS__">__MACD_ST__<br><span style="font-size:11px">__MACD_DIR__</span></div></div>
+  <div class="signal-card"><div class="label">布林带</div><div class="value" style="color:#f39c12">__BB_POS__<br><span style="font-size:11px">__BB_SIG__</span></div></div>
+  <div class="signal-card"><div class="label">最近金叉</div><div class="value up">__LAST_GC__</div></div>
+  <div class="signal-card"><div class="label">最近死叉</div><div class="value down">__LAST_DC__</div></div>
+  <div class="signal-card"><div class="label">RSI(14)</div><div class="value" style="color:__RSI_COLOR__">__RSI__</div></div>
+  <div class="signal-card"><div class="label">成交量</div><div class="value">__VOL_VS_AVG__<br><span style="font-size:11px">__VOL_TODAY__万股 vs 均__VOL_AVG__</span></div></div>
+</div>
+
+<div class="stats">
+  <div class="stat-item"><div class="stat-val __CHG_CLASS__">HK$__END_PRICE__</div><div class="stat-lbl">最新收盘</div></div>
+  <div class="stat-item"><div class="stat-val">HK$__START_PRICE__</div><div class="stat-lbl">上市首日收盘</div></div>
+  <div class="stat-item"><div class="stat-val __CHG_CLASS__">__CHG__</div><div class="stat-lbl">期间涨跌</div></div>
+  <div class="stat-item"><div class="stat-val __PCT_CLASS__">__CHG_PCT__</div><div class="stat-lbl">涨跌幅</div></div>
+  <div class="stat-item"><div class="stat-val up">HK$__ALL_HI__</div><div class="stat-lbl">区间最高</div></div>
+  <div class="stat-item"><div class="stat-val down">HK$__ALL_LO__</div><div class="stat-lbl">区间最低</div></div>
+</div>
+
+<div class="container">
+  <div class="chart-box"><div id="kline-chart"></div></div>
+  <div class="chart-box"><div id="vol-chart"></div></div>
+  <div class="chart-box"><div id="macd-chart"></div></div>
+</div>
+
+<div class="analysis-section">
+  <div class="analysis-card">
+    <h3>📊 近期盘面回顾</h3>
+    <p>智谱近5个交易日走势：<code>__RECENT_SUMMARY__</code></p>
+    <p>上周（6月22-26日）出现了<span class="highlight">单日涨幅 +15% 与单日跌幅 -13% 并存</span>的极端波动，这是典型的新股高换手、高博弈特征。</p>
+    <ul>
+      <li><b>6月22日</b>：盘中飙升至历史新高 <span class="highlight">HK$__ALL_HI__</span>，收盘 HK$2410，单日涨幅 +15.09%</li>
+      <li><b>6月23日</b>：高位回落，<span class="warn">大跌 -9.96%</span>，收于 HK$2170</li>
+      <li><b>6月26日</b>：再度 <span class="warn">暴跌 -12.94%</span>，收盘 HK$__END_PRICE__，跌破5日和10日均线</li>
+    </ul>
+    <p>从高点 HK$__ALL_HI__ 到收盘 HK$__END_PRICE__，<span class="warn">4个交易日回调约 __RECENT_DROP_PCT__%</span>。但考虑到上市以来涨幅超 __GAIN_PCT__%，此回调尚属正常技术性调整。</p>
+  </div>
+
+  <div class="analysis-card">
+    <h3>🔍 技术面深度分析</h3>
+    <h4>1. 均线系统</h4>
+    <p>当前均线数值：MA5=__MA5V__ | MA10=__MA10V__ | MA20=__MA20V__</p>
+    <p>均线当前呈 <span class="highlight">__MA_ST__</span>。智谱作为新股（2026年1月8日上市），均线系统形成时间较短，MA20 仅反映约一个月的市场成本，<span class="warn">支撑/阻力的参考意义弱于老股</span>。</p>
+    <h4>2. MACD指标</h4>
+    <p>DIF=__DIF__ | DEA=__DEA__ | MACD柱=__MACD_HIST__</p>
+    <p>MACD当前处于 <span class="warn">__MACD_ST__</span>，__MACD_DIR__。新股的 MACD 信号波动较大，建议结合成交量与 K 线形态综合判断。</p>
+    <h4>3. 布林带分析</h4>
+    <p>布林上轨=__BB_UPPER__ | 中轨=__BB_MID__ | 下轨=__BB_LOWER__</p>
+    <p>股价位于 <span style="color:#f39c12">__BB_POS__</span>（__BB_SIG__）。此前股价曾突破上轨（超买），现正在回落。若继续下跌，中轨(HK$__BB_MID_INT__)将是关键支撑。<span class="highlight">下轨在 HK$__BB_LOWER_INT__</span>。</p>
+    <h4>4. 成交量分析</h4>
+    <p>6月26日成交 __VOL_TODAY__ 万股，20日均 __VOL_AVG__ 万股，量能为 __VOL_VS_AVG__。<span class="warn">新股换手率高、波动大，放量下跌通常是获利盘出逃信号</span>。</p>
+    <h4>5. 综合判断</h4>
+    <p><span class="tag tag-bear">短线偏空</span> <span class="tag tag-bull">上市以来上涨趋势未破</span></p>
+    <p>短线：高点回落 + MACD __MACD_DIR__ + 波动极大 = <span class="warn">短期调整压力大</span>，不建议追涨杀跌。<br>
+    中线：上市以来涨幅 __GAIN_PCT__% + AI 大模型赛道 + 股价仍在布林中轨之上 = <span class="highlight">中长期趋势尚未破坏，但需关注回调深度</span>。</p>
+  </div>
+
+  <div class="analysis-card">
+    <h3>🏢 基本面分析</h3>
+    <h4>公司概况</h4>
+    <p><b>北京智谱华章科技股份有限公司</b>（Zhipu AI, HK:02513），成立于 2019 年，2026 年 1 月 8 日登陆港交所主板。总部位于北京，董事长刘德兵。</p>
+    <p><b>核心业务</b>：通用人工智能（AGI）大模型的研发与服务。公司合作研发了中英双语千亿级超大规模预训练模型 <span class="highlight">GLM-130B</span>，并推出对话模型 ChatGLM、开源模型 ChatGLM-6B。</p>
+    <p><b>产品矩阵</b>：AI 提效助手「智谱清言」(chatglm.cn)、代码模型 CodeGeeX、多模态理解模型 CogVLM、文生图模型 CogView 等。</p>
+    <p><b>商业模式</b>：践行 <span class="highlight">Model as a Service (MaaS)</span> 理念，通过大模型 MaaS 开放平台 (open.bigmodel.cn) 向千行百业提供「模型即服务」。</p>
+    <p><b>行业地位</b>：中国 AI 大模型领域<span class="highlight">第一梯队</span>，与百度文心、阿里通义、字节豆包等并列，是国内大模型「六小龙」之一。</p>
+    <h4>核心投资逻辑</h4>
+    <ol>
+      <li><b>AI 大模型赛道爆发</b>：ChatGPT 引发全球 AI 大模型竞赛，智谱作为国内领先的大模型公司，直接受益于 AI 算力与应用需求爆发。</li>
+      <li><b>GLM 系列技术领先</b>：GLM-130B 是中英双语千亿级模型，ChatGLM 系列开源社区影响力大，技术积累深厚。</li>
+      <li><b>MaaS 商业化落地</b>：通过 MaaS 平台将大模型能力 API 化，已在智能设备、金融、制造、医疗、零售等领域落地。</li>
+      <li><b>多模态布局</b>：CogVLM（视觉理解）、CogView（文生图）、CodeGeeX（代码生成）等多模态产品矩阵，覆盖 AI 应用全场景。</li>
+      <li><b>港股稀缺标的</b>：港股市场纯正 AI 大模型标的稀缺，智谱上市后受到资金追捧。</li>
+    </ol>
+    <h4>风险因素</h4>
+    <ol>
+      <li><span class="warn">新股高波动</span>：2026年1月上市，上市以来涨幅超 __GAIN_PCT__%，估值可能透支未来增长</li>
+      <li><b>商业化不确定性</b>：大模型行业整体仍处亏损期，MaaS 收入规模与盈利模式尚待验证</li>
+      <li><b>竞争激烈</b>：国内大模型「百模大战」，百度、阿里、华为、字节等巨头均在布局，竞争壁垒存疑</li>
+      <li><b>算力成本高企</b>：大模型训练与推理需要大量 GPU 算力，成本压力大</li>
+      <li><b>技术迭代风险</b>：AI 技术更新极快，若在下一代模型（GPT-5 级别）研发落后，竞争优势将迅速丧失</li>
+      <li><b>港股流动性风险</b>：港股市场流动性不如 A 股，新股可能出现暴涨暴跌</li>
+    </ol>
+  </div>
+
+  <div class="analysis-card">
+    <h3>📖 基础知识讲解</h3>
+    <h4>什么是K线？</h4>
+    <p><b>K线（蜡烛图）</b> 是一种记录价格走势的图表，由日本的米商本间宗久在18世纪发明。每根K线包含<span class="highlight">四个价格</span>：开盘价、收盘价、最高价、最低价。</p>
+    <p><b>阳线（红/白）</b>：收盘 > 开盘，表示价格上涨。实体部分用红色填充。<br>
+    <b>阴线（绿/黑）</b>：收盘 < 开盘，表示价格下跌。实体部分用绿色填充。<br>
+    （注：港股与 A 股一样习惯红涨绿跌，与美股相反）</p>
+    <p>K线能直观反映市场情绪：长阳线代表多头强势，长阴线代表空头碾压；十字星代表犹豫不定。连续多根K线组合成各种形态（如头肩顶、W底等），是技术分析的基石。</p>
+    <h4>什么是基本面分析？</h4>
+    <p><b>基本面分析</b>是通过研究公司的财务状况、行业地位、管理团队、竞争格局等，判断公司的<span class="highlight">内在价值</span>是否被市场低估或高估。</p>
+    <p><b>主要指标</b>：</p>
+    <ul>
+      <li><b>PE（市盈率）</b>：股价/每股收益，衡量"回本年限"</li>
+      <li><b>ROE（净资产收益率）</b>：公司用股东的钱创造利润的效率</li>
+      <li><b>营收增长率</b>：业务在扩张还是收缩</li>
+      <li><b>毛利率</b>：产品竞争力，越高越有议价权</li>
+    </ul>
+    <p>基本面分析回答的问题："这家公司<span class="highlight">值多少钱</span>？现在的价格合理吗？" 适合长期投资者和机构决策。</p>
+    <h4>什么是技术面分析？</h4>
+    <p><b>技术面分析</b>基于三个假设：① 市场行为包容消化一切 ② 价格以趋势方式演变 ③ 历史会重演。通过研究价格图表和指标，预测未来走势。</p>
+    <p><b>常用技术指标</b>：</p>
+    <table>
+      <tr><th>指标</th><th>作用</th><th>当前信号</th></tr>
+      <tr><td>MA（移动平均线）</td><td>趋势方向，金叉/死叉</td><td style="color:__MA_ST_COLOR__">__MA_ST__</td></tr>
+      <tr><td>MACD</td><td>趋势强度，多空转换</td><td style="color:__MACD_ST_COLOR__">__MACD_ST__</td></tr>
+      <tr><td>布林带</td><td>超买/超卖，波动范围</td><td style="color:#f39c12">__BB_SIG__</td></tr>
+      <tr><td>RSI(14)</td><td>超买(>70)/超卖(&lt;30)</td><td style="color:__RSI_COLOR__">__RSI__ __RSI_DESC__</td></tr>
+      <tr><td>成交量</td><td>趋势确认，放量/缩量</td><td style="color:__VOL_COLOR__">__VOL_VS_AVG__</td></tr>
+    </table>
+    <p style="margin-top:10px;"><b>基本面 vs 技术面</b>：基本面告诉你<span class="highlight">"买什么"</span>、技术面告诉你<span class="highlight">"什么时候买"</span>。两者结合是最有效的投资方法。</p>
+    <p style="margin-top:6px;color:#6e7681;font-size:13px;"><b>⚠️ 新股特别注意</b>：智谱为 2026 年新上市股票，技术指标形成时间短，传统技术分析的可靠性低于上市超过 1 年的老股。新股更多受资金博弈和情绪驱动，技术指标仅供参考。</p>
+  </div>
+
+  <div class="analysis-card">
+    <h3>⚠️ 风险提示</h3>
+    <p style="color:#6e7681;font-size:13px;">
+      本页面所有分析基于公开市场数据和技术指标计算，仅供学习研究参考，<span class="highlight">不构成任何投资建议</span>。<br><br>
+      股票投资具有高风险性，智谱（02513.HK）作为 2026 年新上市股票，上市以来涨幅巨大，<span class="warn">投资者可能面临本金大幅损失</span>。<br><br>
+      AI 大模型行业受技术迭代、算力成本、政策监管、市场竞争等多重因素影响，公司估值已显著高于传统估值区间，<span class="warn">回调风险不可忽视</span>。港股新股流动性可能突然枯竭，买卖价差可能扩大。<br><br>
+      请根据自身风险承受能力独立做出投资决策。
+    </p>
+  </div>
+</div>
+
+<div class="footer">
+  数据来源: 腾讯自选股 &nbsp;|&nbsp; 智谱 02513.HK &nbsp;|&nbsp; 生成: __DATE_TO__<br>
+  技术指标: K线 + 布林带 + MACD + RSI &nbsp;|&nbsp; 红涨绿跌 &nbsp;|&nbsp; 价格单位: 港元(HK$) &nbsp;|&nbsp; 仅供参考，不构成投资建议
+</div>
+
+<script>
+// ── All data in one JSON blob ──
+var D = __DATA_JSON__;
+
+var UP = "#e74c3c", DOWN = "#2ecc71";
+var ZS = 50, ZE = 100;
+
+// Build candlestick data
+var kl = [];
+for (var i = 0; i < D.dates.length; i++) {
+  kl.push([D.opens[i], D.closes[i], D.lows[i], D.highs[i]]);
+}
+
+// ── K-line Chart ──
+var kch = echarts.init(document.getElementById("kline-chart"));
+kch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var c = D.pcts[i];
+      var col = c >= 0 ? UP : DOWN;
+      var s = '<div style="font-size:13px;line-height:2"><b>' + D.dates[i] + '</b><br>';
+      s += 'O <b>' + D.opens[i].toFixed(2) + '</b> H <b style="color:' + UP + '">' + D.highs[i].toFixed(2) + '</b><br>';
+      s += 'L <b style="color:' + DOWN + '">' + D.lows[i].toFixed(2) + '</b> C <b style="color:' + col + ';font-size:15px">' + D.closes[i].toFixed(2) + '</b><br>';
+      s += '涨跌 <b style="color:' + col + '">' + (c >= 0 ? "+" : "") + c.toFixed(2) + '%</b><br>';
+      if (D.bbUpper[i] != null) s += 'BB上' + D.bbUpper[i].toFixed(2) + ' 中' + D.bbMid[i].toFixed(2) + ' 下' + D.bbLower[i].toFixed(2) + '<br>';
+      if (D.dif[i] != null) s += 'DIF ' + D.dif[i].toFixed(2) + ' DEA ' + D.dea[i].toFixed(2);
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["K线", "MA5", "MA10", "MA20", "BB上轨", "BB下轨"], top: 4, left: 50, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 42, bottom: 8 },
+  xAxis: { type: "category", data: D.dates, axisLine: { lineStyle: { color: "#21262d" } }, axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 }, axisTick: { show: false }, splitLine: { show: false } },
+  yAxis: { type: "value", name: "价格(HK$)", nameTextStyle: { color: "#484f58", fontSize: 11 }, scale: true, splitLine: { lineStyle: { color: "#21262d", type: "dashed" } }, axisLabel: { color: "#484f58", fontSize: 11 }, axisLine: { show: false } },
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 0, bottom: 0 }
+  ],
+  series: [
+    { name: "K线", type: "candlestick", data: kl, itemStyle: { color: UP, color0: DOWN, borderColor: UP, borderColor0: DOWN, borderWidth: 1 } },
+    { name: "MA5", type: "line", data: D.ma5, symbol: "none", lineStyle: { width: 1.2, color: "#e67e22" } },
+    { name: "MA10", type: "line", data: D.ma10, symbol: "none", lineStyle: { width: 1.2, color: "#a29bfe" } },
+    { name: "MA20", type: "line", data: D.ma20, symbol: "none", lineStyle: { width: 1.5, color: "#1abc9c" } },
+    { name: "BB上轨", type: "line", data: D.bbUpper, symbol: "none", lineStyle: { width: 1, color: "#f39c12", type: "dashed" } },
+    { name: "BB下轨", type: "line", data: D.bbLower, symbol: "none", lineStyle: { width: 1, color: "#f39c12", type: "dashed" } },
+    { name: "BB中轨", type: "line", data: D.bbMid, symbol: "none", lineStyle: { width: 0.8, color: "#f39c12" } },
+    { name: "金叉", type: "scatter", data: D.gcMarkers, symbol: "triangle", symbolSize: 14, itemStyle: { color: "#e74c3c" }, z: 10, label: { show: true, position: "bottom", color: "#e74c3c", fontSize: 9, formatter: "金" } },
+    { name: "死叉", type: "scatter", data: D.dcMarkers, symbol: "triangle", symbolRotate: 180, symbolSize: 14, itemStyle: { color: "#2ecc71" }, z: 10, label: { show: true, position: "top", color: "#2ecc71", fontSize: 9, formatter: "死" } },
+    { name: "阻力", type: "line", data: [], markLine: { silent: true, symbol: "none", lineStyle: { color: "#e74c3c", type: "dashed", width: 1 }, label: { color: "#e74c3c", fontSize: 10 }, data: [ { yAxis: D.r20Hi, name: "阻 " + D.r20Hi }, { yAxis: D.allHi, name: "高 " + D.allHi } ] } },
+    { name: "支撑", type: "line", data: [], markLine: { silent: true, symbol: "none", lineStyle: { color: "#2ecc71", type: "dashed", width: 1 }, label: { color: "#2ecc71", fontSize: 10 }, data: [ { yAxis: D.r20Lo, name: "支 " + D.r20Lo }, { yAxis: D.allLo, name: "低 " + D.allLo } ] } }
+  ]
+});
+
+// ── Volume Chart ──
+var vch = echarts.init(document.getElementById("vol-chart"));
+vch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: { trigger: "axis", backgroundColor: "rgba(13,17,23,0.96)", borderColor: "#21262d", textStyle: { color: "#c9d1d9", fontSize: 12 }, formatter: function(ps) { var i = ps[0].dataIndex; return D.dates[i] + "<br>成交量 <b>" + D.vols[i].toFixed(2) + "</b> 万股"; } },
+  grid: { left: "7%", right: "3%", top: 6, bottom: 22 },
+  xAxis: { type: "category", data: D.dates, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#21262d" } }, axisTick: { show: false }, splitLine: { show: false } },
+  yAxis: { type: "value", name: "万股", nameTextStyle: { color: "#484f58", fontSize: 11 }, splitLine: { lineStyle: { color: "#21262d", type: "dashed" } }, axisLabel: { color: "#484f58", fontSize: 10 }, axisLine: { show: false } },
+  dataZoom: [ { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 }, { type: "slider", start: ZS, end: ZE, height: 18, bottom: 2 } ],
+  series: [ { type: "bar", data: D.vols.map(function(v, i) { return { value: v, itemStyle: { color: D.pcts[i] >= 0 ? "rgba(231,76,60,0.65)" : "rgba(46,204,113,0.65)" } }; }), barWidth: "60%" } ]
+});
+
+// ── MACD Chart ──
+var mch = echarts.init(document.getElementById("macd-chart"));
+mch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: { trigger: "axis", backgroundColor: "rgba(13,17,23,0.96)", borderColor: "#21262d", textStyle: { color: "#c9d1d9", fontSize: 12 }, formatter: function(ps) { var i = ps[0].dataIndex; if (D.dif[i] == null) return ""; return D.dates[i] + "<br>DIF <b style='color:#e67e22'>" + D.dif[i].toFixed(2) + "</b> DEA <b style='color:#3498db'>" + D.dea[i].toFixed(2) + "</b><br>MACD <b style='color:" + (D.macdHist[i] >= 0 ? "#e74c3c" : "#2ecc71") + "'>" + D.macdHist[i].toFixed(2) + "</b>"; } },
+  legend: { data: ["MACD柱", "DIF", "DEA"], top: 4, left: 50, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 36, bottom: 24 },
+  xAxis: { type: "category", data: D.dates, axisLine: { lineStyle: { color: "#21262d" } }, axisLabel: { color: "#484f58", fontSize: 9, formatter: function(v) { return v.substring(5); }, rotate: 45 }, axisTick: { show: false }, splitLine: { show: false } },
+  yAxis: { type: "value", name: "MACD", nameTextStyle: { color: "#484f58", fontSize: 11 }, splitLine: { lineStyle: { color: "#21262d", type: "dashed" } }, axisLabel: { color: "#484f58", fontSize: 10 }, axisLine: { show: false } },
+  dataZoom: [ { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 }, { type: "slider", start: ZS, end: ZE, height: 18, bottom: 2 } ],
+  series: [
+    { name: "MACD柱", type: "bar", data: D.macdHist.map(function(v) { if (v == null) return 0; return { value: v, itemStyle: { color: v >= 0 ? "rgba(231,76,60,0.6)" : "rgba(46,204,113,0.6)" } }; }), barWidth: "60%" },
+    { name: "DIF", type: "line", data: D.dif, symbol: "none", lineStyle: { width: 1.2, color: "#e67e22" } },
+    { name: "DEA", type: "line", data: D.dea, symbol: "none", lineStyle: { width: 1.2, color: "#3498db" } }
+  ]
+});
+
+// Sync zoom
+kch.group = "sync";
+vch.group = "sync";
+mch.group = "sync";
+echarts.connect("sync");
+
+// Responsive
+window.addEventListener("resize", function() { kch.resize(); vch.resize(); mch.resize(); });
+</script>
+</body>
+</html>
