@@ -538,7 +538,9 @@ html_parts.append(f"""
   技术指标: K线 + 布林带 + MACD + RSI &nbsp;|&nbsp; 红涨绿跌 &nbsp;|&nbsp; 仅供参考，不构成投资建议
 </div>
 
+<script>
 {js_vars}
+</script>
 {Chart1}
 </body>
 </html>""")
