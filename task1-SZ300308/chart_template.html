@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中际旭创(300308.SZ) 每日收盘价走势图</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f5f6fa; }
+.header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: #fff; padding: 24px 32px; text-align: center; }
+.header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+.header .subtitle { font-size: 14px; opacity: 0.8; }
+.stats { display: flex; justify-content: center; gap: 48px; padding: 20px 32px; background: #fff; border-bottom: 1px solid #e8e8e8; flex-wrap: wrap; }
+.stat-item { text-align: center; }
+.stat-value { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+.stat-label { font-size: 13px; color: #999; }
+.stat-value.up { color: #e74c3c; }
+.stat-value.down { color: #2ecc71; }
+.container { max-width: 1400px; margin: 0 auto; padding: 16px 24px; }
+.chart-wrapper { background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 16px; margin-bottom: 16px; }
+.chart { width: 100%; height: 500px; }
+.chart-vol { width: 100%; height: 200px; }
+.footer { text-align: center; padding: 24px; color: #999; font-size: 12px; }
+@media (max-width: 768px) {
+  .header h1 { font-size: 20px; }
+  .stats { gap: 20px; }
+  .stat-value { font-size: 20px; }
+  .chart { height: 350px; }
+  .chart-vol { height: 150px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>中际旭创 300308.SZ</h1>
+  <div class="subtitle">每日收盘价走势图 | __START_DATE__ ~ __END_DATE__ | 共 __COUNT__ 个交易日</div>
+</div>
+
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-value __UP_CLASS__">¥__END_PRICE__</div>
+    <div class="stat-label">最新收盘价</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value">¥__START_PRICE__</div>
+    <div class="stat-label">期初收盘价</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value __UP_CLASS__">__TOTAL_CHANGE__</div>
+    <div class="stat-label">期间涨跌额</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value __UP_CLASS__">__TOTAL_PCT__</div>
+    <div class="stat-label">期间涨跌幅</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value up">¥__MAX_HIGH__</div>
+    <div class="stat-label">区间最高价</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-value down">¥__MIN_LOW__</div>
+    <div class="stat-label">区间最低价</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="chart-wrapper">
+    <div id="main-chart" class="chart"></div>
+  </div>
+  <div class="chart-wrapper">
+    <div id="vol-chart" class="chart-vol"></div>
+  </div>
+</div>
+
+<div class="footer">
+  数据来源: Tushare Pro | 中际旭创 300308.SZ | 区间: __START_DATE__ ~ __END_DATE__<br>
+  本页面仅供学习参考，不构成投资建议
+</div>
+
+<script>
+var dates = __DATES__;
+var closes = __CLOSES__;
+var opens = __OPENS__;
+var highs = __HIGHS__;
+var lows = __LOWS__;
+var vols = __VOLS__;
+var amounts = __AMOUNTS__;
+var pctChgs = __PCTCHGS__;
+
+var UP = '#e74c3c';
+var DOWN = '#2ecc71';
+
+function calcMA(period) {
+  var result = [];
+  for (var i = 0; i < closes.length; i++) {
+    if (i < period - 1) { result.push(null); continue; }
+    var sum = 0;
+    for (var j = 0; j < period; j++) sum += closes[i - j];
+    result.push(parseFloat((sum / period).toFixed(2)));
+  }
+  return result;
+}
+
+var mainChart = echarts.init(document.getElementById('main-chart'));
+var mainOption = {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'cross', crossStyle: { color: '#999' } },
+    formatter: function(params) {
+      var i = params[0].dataIndex;
+      var chg = pctChgs[i];
+      var color = chg >= 0 ? UP : DOWN;
+      return '<div style="font-size:13px;line-height:1.8">' +
+        '<b>' + dates[i] + '</b><br/>' +
+        '开盘: <b>' + opens[i].toFixed(2) + '</b><br/>' +
+        '最高: <b style="color:' + UP + '">' + highs[i].toFixed(2) + '</b><br/>' +
+        '最低: <b style="color:' + DOWN + '">' + lows[i].toFixed(2) + '</b><br/>' +
+        '收盘: <b style="color:' + color + ';font-size:15px">' + closes[i].toFixed(2) + '</b><br/>' +
+        '涨跌幅: <b style="color:' + color + '">' + (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%</b><br/>' +
+        '成交额: ' + amounts[i].toFixed(0) + ' 万元' +
+        '</div>';
+    }
+  },
+  legend: {
+    data: ['收盘价', 'MA5', 'MA10', 'MA20'],
+    top: 8,
+    textStyle: { fontSize: 13 }
+  },
+  grid: { left: '8%', right: '4%', top: 60, bottom: 60 },
+  xAxis: {
+    type: 'category',
+    data: dates,
+    axisLabel: {
+      formatter: function(v) { return v.substring(5); },
+      rotate: 45,
+      fontSize: 11
+    },
+    axisLine: { lineStyle: { color: '#ccc' } }
+  },
+  yAxis: {
+    type: 'value',
+    name: '价格 (¥)',
+    scale: true,
+    splitLine: { lineStyle: { color: '#f0f0f0', type: 'dashed' } },
+    axisLabel: { formatter: '¥{value}' }
+  },
+  dataZoom: [
+    { type: 'inside', start: 0, end: 100 },
+    { type: 'slider', start: 50, end: 100, height: 30, bottom: 20 }
+  ],
+  series: [
+    {
+      name: '收盘价',
+      type: 'line',
+      data: closes,
+      smooth: true,
+      lineStyle: { width: 2, color: '#3498db' },
+      itemStyle: { color: '#3498db' },
+      symbol: 'none'
+    },
+    {
+      name: 'MA5',
+      type: 'line',
+      data: calcMA(5),
+      smooth: true,
+      lineStyle: { width: 1, color: '#e67e22', type: 'dashed' },
+      itemStyle: { color: '#e67e22' },
+      symbol: 'none'
+    },
+    {
+      name: 'MA10',
+      type: 'line',
+      data: calcMA(10),
+      smooth: true,
+      lineStyle: { width: 1, color: '#9b59b6', type: 'dashed' },
+      itemStyle: { color: '#9b59b6' },
+      symbol: 'none'
+    },
+    {
+      name: 'MA20',
+      type: 'line',
+      data: calcMA(20),
+      smooth: true,
+      lineStyle: { width: 1.5, color: '#1abc9c', type: 'dashed' },
+      itemStyle: { color: '#1abc9c' },
+      symbol: 'none'
+    }
+  ]
+};
+mainChart.setOption(mainOption);
+
+var volChart = echarts.init(document.getElementById('vol-chart'));
+var volOption = {
+  tooltip: {
+    trigger: 'axis',
+    formatter: function(params) {
+      var i = params[0].dataIndex;
+      return dates[i] + '<br/>成交量: <b>' + vols[i].toFixed(2) + ' 万手</b>';
+    }
+  },
+  grid: { left: '8%', right: '4%', top: 10, bottom: 30 },
+  xAxis: {
+    type: 'category',
+    data: dates,
+    axisLabel: { show: false },
+    axisLine: { lineStyle: { color: '#ccc' } }
+  },
+  yAxis: {
+    type: 'value',
+    name: '万手',
+    splitLine: { lineStyle: { color: '#f0f0f0', type: 'dashed' } }
+  },
+  dataZoom: [
+    { type: 'inside', start: 50, end: 100 },
+    { type: 'slider', start: 50, end: 100, height: 25, bottom: 5 }
+  ],
+  series: [{
+    type: 'bar',
+    data: vols.map(function(v, i) {
+      return {
+        value: v,
+        itemStyle: { color: pctChgs[i] >= 0 ? UP : DOWN }
+      };
+    }),
+    barWidth: '60%'
+  }]
+};
+volChart.setOption(volOption);
+
+mainChart.group = 'sync';
+volChart.group = 'sync';
+echarts.connect('sync');
+
+window.addEventListener('resize', function() {
+  mainChart.resize();
+  volChart.resize();
+});
+</script>
+</body>
+</html>
