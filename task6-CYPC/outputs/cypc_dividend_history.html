@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>长江电力 分红历史</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f8fa;color:#1f2937;}
+.header{text-align:center;padding:24px 16px 12px;}
+.header h1{font-size:24px;color:#1f2937;margin-bottom:4px;}
+.header .sub{font-size:13px;color:#6b7280;}
+.container{max-width:1000px;margin:0 auto;padding:0 16px;}
+.chart-box{background:#fff;border-radius:10px;padding:16px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+#bar-chart{width:100%;height:450px;}
+.insight-box{background:#fff;border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.insight-box h3{font-size:16px;color:#e74c3c;margin-bottom:12px;}
+.insight-box p{font-size:14px;line-height:1.8;color:#4b5563;}
+.insight-box .highlight{color:#e74c3c;font-weight:600;}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+table th{text-align:left;padding:8px 10px;background:#f9fafb;color:#6b7280;font-size:12px;border-bottom:2px solid #e5e7eb;}
+table td{padding:8px 10px;border-bottom:1px solid #f3f4f6;}
+table tr:hover{background:#f9fafb;}
+.footer{text-align:center;padding:14px;color:#9ca3af;font-size:11px;border-top:1px solid #e5e7eb;margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>长江电力 (600900.SH) 分红历史</h1>
+  <div class="sub">2004 - 2026 | 共 25 次分红实施 | 数据来源: Tushare</div>
+</div>
+
+<div class="container">
+  <div class="insight-box">
+    <h3>分红摘要</h3>
+    <p>长江电力自2003年上市以来，保持了<span class="highlight">连续23年现金分红</span>的纪录（含2004年首次实施）。</p>
+    <p>每股分红从2004年的¥0.072 增长至2024年的¥0.82，<span class="highlight">增长超11倍</span>，年化复合增长率约12%。</p>
+    <p>公司承诺分红率不低于70%，近年实际分红率更高。2024年起改为<span class="highlight">半年度分红</span>模式，进一步提升投资者现金流回报。</p>
+  </div>
+
+  <div class="chart-box">
+    <div id="bar-chart"></div>
+  </div>
+
+  <div class="insight-box">
+    <h3>历年分红明细</h3>
+    <table>
+      <tr><th>除权日</th><th>年度</th><th>每股分红 (¥)</th><th>累计分红 (¥)</th></tr>
+      <tr><td>2004-06-01</td><td>2004</td><td style="color:#e74c3c;font-weight:600">¥0.0720</td><td>¥0.0720</td></tr>
+      <tr><td>2005-05-24</td><td>2005</td><td style="color:#e74c3c;font-weight:600">¥0.1680</td><td>¥0.2400</td></tr>
+      <tr><td>2005-08-12</td><td>2005</td><td style="color:#e74c3c;font-weight:600">¥0.1566</td><td>¥0.3966</td></tr>
+      <tr><td>2006-06-07</td><td>2006</td><td style="color:#e74c3c;font-weight:600">¥0.1701</td><td>¥0.5667</td></tr>
+      <tr><td>2007-06-11</td><td>2007</td><td style="color:#e74c3c;font-weight:600">¥0.2118</td><td>¥0.7785</td></tr>
+      <tr><td>2008-07-22</td><td>2008</td><td style="color:#e74c3c;font-weight:600">¥0.2671</td><td>¥1.0456</td></tr>
+      <tr><td>2009-08-07</td><td>2009</td><td style="color:#e74c3c;font-weight:600">¥0.1943</td><td>¥1.2399</td></tr>
+      <tr><td>2010-07-20</td><td>2010</td><td style="color:#e74c3c;font-weight:600">¥0.3332</td><td>¥1.5731</td></tr>
+      <tr><td>2011-06-23</td><td>2011</td><td style="color:#e74c3c;font-weight:600">¥0.2302</td><td>¥1.8034</td></tr>
+      <tr><td>2012-07-02</td><td>2012</td><td style="color:#e74c3c;font-weight:600">¥0.2292</td><td>¥2.0325</td></tr>
+      <tr><td>2013-07-01</td><td>2013</td><td style="color:#e74c3c;font-weight:600">¥0.3150</td><td>¥2.3475</td></tr>
+      <tr><td>2014-07-11</td><td>2014</td><td style="color:#e74c3c;font-weight:600">¥0.2664</td><td>¥2.6139</td></tr>
+      <tr><td>2015-06-30</td><td>2015</td><td style="color:#e74c3c;font-weight:600">¥0.3602</td><td>¥2.9740</td></tr>
+      <tr><td>2016-07-19</td><td>2016</td><td style="color:#e74c3c;font-weight:600">¥0.4000</td><td>¥3.3740</td></tr>
+      <tr><td>2017-07-14</td><td>2017</td><td style="color:#e74c3c;font-weight:600">¥0.7250</td><td>¥4.0990</td></tr>
+      <tr><td>2018-06-22</td><td>2018</td><td style="color:#e74c3c;font-weight:600">¥0.6800</td><td>¥4.7790</td></tr>
+      <tr><td>2019-07-18</td><td>2019</td><td style="color:#e74c3c;font-weight:600">¥0.6800</td><td>¥5.4590</td></tr>
+      <tr><td>2020-07-17</td><td>2020</td><td style="color:#e74c3c;font-weight:600">¥0.6800</td><td>¥6.1390</td></tr>
+      <tr><td>2021-07-16</td><td>2021</td><td style="color:#e74c3c;font-weight:600">¥0.7000</td><td>¥6.8390</td></tr>
+      <tr><td>2022-07-21</td><td>2022</td><td style="color:#e74c3c;font-weight:600">¥0.8153</td><td>¥7.6543</td></tr>
+      <tr><td>2023-07-21</td><td>2023</td><td style="color:#e74c3c;font-weight:600">¥0.8533</td><td>¥8.5076</td></tr>
+      <tr><td>2024-07-19</td><td>2024</td><td style="color:#e74c3c;font-weight:600">¥0.8200</td><td>¥9.3276</td></tr>
+      <tr><td>2025-01-24</td><td>2025</td><td style="color:#e74c3c;font-weight:600">¥0.2100</td><td>¥9.5376</td></tr>
+      <tr><td>2025-07-18</td><td>2025</td><td style="color:#e74c3c;font-weight:600">¥0.7330</td><td>¥10.2706</td></tr>
+      <tr><td>2026-02-12</td><td>2026</td><td style="color:#e74c3c;font-weight:600">¥0.2100</td><td>¥10.4807</td></tr>
+    </table>
+    <p style="margin-top:12px;font-size:14px;color:#4b5563;">上市以来累计每股分红约 <span class="highlight">¥10.48</span>（含税），若持有10000股至今，累计获得分红约 <span class="highlight">¥104,806</span>。</p>
+  </div>
+</div>
+
+<div class="footer">
+  数据来源: Tushare Pro (dividend接口) | 长江电力 600900.SH | 生成: 2026-02-12<br>
+  分红数据为含税口径，仅供参考，不构成投资建议
+</div>
+
+<script>
+var years = ["2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025", "2026"];
+var cashDivs = [0.072, 0.3246, 0.1701, 0.2118, 0.2671, 0.1943, 0.3332, 0.2302, 0.2292, 0.315, 0.2664, 0.3602, 0.4, 0.725, 0.68, 0.68, 0.68, 0.7, 0.8153, 0.8533, 0.82, 0.943, 0.21];
+
+var chart = echarts.init(document.getElementById("bar-chart"));
+chart.setOption({
+  tooltip: {
+    trigger: "axis",
+    formatter: function(ps) {
+      return ps[0].name + "年<br>每股分红 <b style='color:#e74c3c'>¥" + ps[0].value.toFixed(4) + "</b>";
+    }
+  },
+  grid: { left: "8%", right: "4%", top: 20, bottom: 50 },
+  xAxis: {
+    type: "category",
+    data: years,
+    axisLabel: { rotate: 45, fontSize: 10 },
+    name: "年度"
+  },
+  yAxis: {
+    type: "value",
+    name: "每股分红 (元)",
+    axisLabel: { formatter: "¥{value}" }
+  },
+  series: [{
+    type: "bar",
+    data: cashDivs.map(function(v) {
+      var color = v >= 0.6601 ? "#e74c3c" : "#f39c12";
+      return { value: v, itemStyle: { color: color } };
+    }),
+    barWidth: "60%",
+    label: {
+      show: true,
+      position: "top",
+      formatter: function(p) { return p.value > 0 ? "¥" + p.value.toFixed(3) : ""; },
+      fontSize: 9,
+      color: "#6b7280"
+    }
+  }]
+});
+</script>
+</body>
+</html>

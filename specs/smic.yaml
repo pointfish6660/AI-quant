@@ -1,0 +1,140 @@
+# ===================================================================
+# 中芯国际（SMIC）取数 Spec
+# A+H 双重上市：科创板 688981.SH + 港股 00981.HK
+# ===================================================================
+
+meta:
+  task_id: task4
+  task_name: SMIC
+  created: 2026-07-01
+  status: planned
+  analyst: 大卫
+
+target:
+  name_cn: 中芯国际
+  name_en: SMIC
+  markets:
+    - market: A股
+      code: 688981.SH
+      tencent_code: sh688981
+      exchange: 上交所
+      board: 科创板
+      currency: CNY
+      ipo_date: 2020-07-16
+      pct_limit: 20                # 科创板涨跌幅 ±20%
+    - market: 港股
+      code: 00981.HK
+      westock_code: hk00981
+      exchange: 港交所
+      board: 主板
+      currency: HKD
+      ipo_date: 2004-03-18
+      pct_limit: null              # 港股无涨跌幅限制
+  industry: 半导体制造
+  sector: 集成电路晶圆代工
+  notes: 大陆最大晶圆代工厂，A/H 双重上市，港股上市更早
+
+# ── 数据源 ──
+data_source:
+  A股:
+    provider: tencent_quote
+    endpoint: https://web.ifzq.gtimg.cn/appstock/app/fqkline/get
+    params:
+      param: "sh688981,day,,,320,qfq"
+    limit: 320
+    notes: 免token；返回 data.sh688981.qfqday 数组
+  港股:
+    provider: westock_cli
+    package: westock-data-clawhub@1.0.4
+    command: kline hk00981 --period day --limit 300
+    limit: 300
+    notes: 输出 Markdown 表格，last 字段为收盘价
+
+# ── 数据维度 ──
+data_dimensions:
+  - name: 日K线行情
+    required: true
+    fields: [trade_date, open, close, high, low, vol, amount, pct_chg, turnover]
+    history_days: 300
+    adjust: qfq
+    scope: [A股, 港股]             # 两个市场都采
+  - name: 公司简况
+    required: true
+    fields: [公司全称, 行业, 上市日期, 总股本, 流通股本, 主营业务]
+  - name: 财务指标
+    required: false
+    fields: [营收, 净利润, 毛利率, ROE, 资产负债率]
+    periods: 8
+  - name: A/H 折溢价跟踪           # A+H 股特有
+    required: true
+    fields: [trade_date, a_close, hk_close, fx_usdhkd, ah_premium_pct]
+    notes: 需 A股收盘价 / 港股收盘价（按汇率换算成人民币）
+
+# ── 字段映射 ──
+field_mapping:
+  A股_tencent:
+    trade_date: "k[0].replace('-','')"
+    open: "float(k[1])"
+    close: "float(k[2])"
+    high: "float(k[3])"
+    low: "float(k[4])"
+    vol: "float(k[5])"
+    amount: "vol * (high+low+close)/3"
+    pct_chg: "(close - prev_close) / prev_close * 100"
+    turnover: null
+  港股_westock:
+    trade_date: "r['date']"
+    open: "to_float(r['open'])"
+    close: "to_float(r['last'])"
+    high: "to_float(r['high'])"
+    low: "to_float(r['low'])"
+    vol: "to_float(r['volume'])"
+    amount: "to_float(r['amount'])"
+    pct_chg: "(close - prev_close) / prev_close * 100"
+    turnover: "to_float(r['exchange'])"
+
+# ── 输出 ──
+output:
+  formats: [csv, json]
+  encoding: utf-8-sig
+  path_pattern:
+    csv_a: "data/smic_a_daily.csv"
+    csv_hk: "data/smic_hk_daily.csv"
+    json_a: "data/smic_a_daily.json"
+    json_hk: "data/smic_hk_daily.json"
+    profile: "data/smic_profile.json"
+    ah_premium: "data/smic_ah_premium.csv"
+  sort: ascending_by_date
+  date_format:
+    A股: YYYYMMDD
+    港股: YYYY-MM-DD
+
+# ── 质量校验 ──
+quality_check:
+  - rule: 字段完整性
+    desc: trade_date/open/close/high/low/vol 非空
+  - rule: 日期唯一
+    desc: trade_date 不重复
+  - rule: 价格合理性
+    desc: low <= close <= high 且 low <= open <= high
+  - rule: 涨跌幅阈值
+    desc: "A股科创板 |pct_chg| <= 20%；港股 |pct_chg| <= 30%（合理性）"
+    on_violation: warn
+  - rule: A/H 折溢价合理性
+    desc: A股 vs 港股收盘价折溢价率在 [-50%, +200%] 内（防止汇率/代码错配）
+    on_violation: warn
+  - rule: 交易日连续性
+    desc: 除节假日外无跳空
+    on_violation: warn
+
+# ── 交付物 ──
+deliverables:
+  - data/smic_a_daily.csv
+  - data/smic_hk_daily.csv
+  - data/smic_a_daily.json
+  - data/smic_hk_daily.json
+  - data/smic_profile.json
+  - data/smic_ah_premium.csv
+  - outputs/smic_kline.html           # K线图（A股+港股双图）
+  - outputs/smic_ah_premium.html      # A/H 折溢价对比图
+  - README.md

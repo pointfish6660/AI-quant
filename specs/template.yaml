@@ -1,0 +1,133 @@
+# ===================================================================
+# BA-quant 股票取数 Spec 模板
+# 用法：复制本文件为 specs/<标的简称>.yaml，填写各字段
+# 参考：specs/SPEC_FORMAT.md
+# ===================================================================
+
+meta:
+  task_id: task{N}               # 任务ID，与目录名 task{N}-XXX 对应
+  task_name: <标的简称>           # 如 SMIC / BYD / CYPC
+  created: YYYY-MM-DD
+  status: planned                # planned / in_progress / completed
+  analyst: 大卫
+
+# ── 标的元信息 ──
+target:
+  name_cn: <中文名>              # 如 中芯国际
+  name_en: <英文名>              # 如 SMIC
+  markets:
+    # A+H 双重上市时填两项；纯 A股只填一项
+    - market: A股                # A股 / 港股 / 美股
+      code: <6位代码>.SH/.SZ     # 如 688981.SH
+      tencent_code: sh688981     # 腾讯接口用的小写前缀代码
+      exchange: <交易所>          # 上交所 / 深交所
+      board: <板块>               # 主板 / 科创板 / 创业板
+      currency: CNY
+      ipo_date: YYYY-MM-DD
+      pct_limit: 10              # 涨跌幅限制 %（科创板/创业板填20）
+    # - market: 港股
+    #   code: 00981.HK
+    #   westock_code: hk00981
+    #   exchange: 港交所
+    #   board: 主板
+    #   currency: HKD
+    #   ipo_date: YYYY-MM-DD
+    #   pct_limit: null          # 港股无涨跌幅限制
+  industry: <行业>               # 如 半导体制造
+  sector: <细分领域>             # 如 集成电路晶圆代工
+
+# ── 数据源 ──
+data_source:
+  A股:
+    provider: tencent_quote
+    endpoint: https://web.ifzq.gtimg.cn/appstock/app/fqkline/get
+    params:
+      param: "{tencent_code},day,,,{limit},qfq"   # 前复权
+    limit: 320                    # 拉取交易日数
+    notes: 免token；返回 data.{tencent_code}.qfqday 数组
+  港股:
+    provider: westock_cli
+    package: westock-data-clawhub@1.0.4
+    command: kline {westock_code} --period day --limit {limit}
+    limit: 300
+    notes: 输出 Markdown 表格，需解析；subprocess 必须加 encoding=utf-8
+
+# ── 数据维度 ──
+data_dimensions:
+  - name: 日K线行情
+    required: true
+    fields: [trade_date, open, close, high, low, vol, amount, pct_chg, turnover]
+    history_days: 300
+    adjust: qfq                   # 前复权
+  - name: 公司简况
+    required: true
+    fields: [公司全称, 行业, 上市日期, 总股本, 流通股本, 主营业务]
+  - name: 财务指标                 # 可选
+    required: false
+    fields: [营收, 净利润, 毛利率, ROE, 资产负债率]
+    periods: 8                    # 最近 8 个季度
+  # - name: 分红除权记录            # 分红标的必填
+  #   required: false
+  #   fields: [除权日, 每股分红, 分红率, 股息率]
+
+# ── 字段映射（原始 → 标准）──
+field_mapping:
+  A股_tencent:
+    trade_date: "k[0].replace('-','')"    # YYYY-MM-DD → YYYYMMDD
+    open: "float(k[1])"
+    close: "float(k[2])"
+    high: "float(k[3])"
+    low: "float(k[4])"
+    vol: "float(k[5])"
+    amount: "vol * (high+low+close)/3"    # 腾讯不直接给成交额，按均价估算
+    pct_chg: "(close - prev_close) / prev_close * 100"
+    turnover: null                         # 腾讯接口不提供，需另外获取
+  港股_westock:
+    trade_date: "r['date']"                # 保留 YYYY-MM-DD
+    open: "to_float(r['open'])"
+    close: "to_float(r['last'])"           # 港股用 last 字段（不是 close）
+    high: "to_float(r['high'])"
+    low: "to_float(r['low'])"
+    vol: "to_float(r['volume'])"           # 单位：股
+    amount: "to_float(r['amount'])"
+    pct_chg: "(close - prev_close) / prev_close * 100"
+    turnover: "to_float(r['exchange'])"    # 港股 westock 提供
+
+# ── 输出 ──
+output:
+  formats: [csv, json]
+  encoding: utf-8-sig              # CSV 带 BOM 防 Excel 乱码
+  path_pattern:
+    csv: "data/{code}_daily.csv"
+    json: "data/{code}_daily.json"
+    profile: "data/{code}_profile.json"
+  sort: ascending_by_date
+  date_format:
+    A股: YYYYMMDD
+    港股: YYYY-MM-DD
+
+# ── 质量校验 ──
+quality_check:
+  - rule: 字段完整性
+    desc: 所有必填字段（trade_date/open/close/high/low/vol）非空
+  - rule: 日期唯一
+    desc: trade_date 不重复
+  - rule: 价格合理性
+    desc: low <= close <= high 且 low <= open <= high
+  - rule: 涨跌幅阈值
+    desc: |-
+      A股主板 |pct_chg| <= 10%
+      科创板/创业板 |pct_chg| <= 20%
+      港股 |pct_chg| <= 30%（合理性阈值，非硬限制）
+    on_violation: warn             # warn / fail
+  - rule: 日期连续性
+    desc: 除节假日外，交易日连续无跳空
+    on_violation: warn
+
+# ── 交付物 ──
+deliverables:
+  - data/{code}_daily.csv
+  - data/{code}_daily.json
+  - data/{code}_profile.json
+  - outputs/{code}_kline.html      # ECharts K线图
+  - README.md                      # 任务说明

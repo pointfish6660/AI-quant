@@ -12,6 +12,9 @@
 | task1 | `task1-SZ300308/` | 中际旭创 300308.SZ | 进行中 | 数据采集、K线图表、GitHub Pages 部署 |
 | task2 | `task2-HK00700/` | 腾讯控股 00700.HK | 进行中 | 港股数据采集、深度分析图表、GitHub Pages 部署 |
 | task3 | `task3-Zhipu/` | 智谱 02513.HK | 进行中 | 港股新股数据采集（腾讯自选股）、深度分析图表、GitHub Pages 部署 |
+| task4 | `task4-SMIC/` | 中芯国际 688981.SH + 00981.HK | 计划中 | A+H 双重上市，半导体龙头，spec 已就绪：`specs/smic.yaml` |
+| task5 | `task5-BYD/` | 比亚迪 002594.SZ + 01211.HK | 计划中 | A+H 双重上市，新能源车+电池，spec 已就绪：`specs/byd.yaml` |
+| task6 | `task6-CYPC/` | 长江电力 600900.SH | 计划中 | 纯 A股，水电蓝筹，分红标的，spec 已就绪：`specs/cypc.yaml` |
 
 ---
 
@@ -48,4 +51,16 @@ echo "# 任务模板" > task_template/README.md
 
 ---
 
-*最后更新: 2026-06-29*
+## 取数 Spec 规范（task4+ 新增）
+
+task4 及以后的新取数任务，**必须先在 `specs/` 目录下准备 spec 文件**，作为该任务的取数契约：
+
+- `specs/SPEC_FORMAT.md` — Spec 文件格式说明
+- `specs/template.yaml` — 通用模板
+- `specs/smic.yaml` / `specs/byd.yaml` / `specs/cypc.yaml` — 三只标的实例
+
+Spec 固化了标的元信息、数据源、字段映射、输出格式、质量校验规则，写脚本前先固化取数规则。
+
+---
+
+*最后更新: 2026-07-01*
