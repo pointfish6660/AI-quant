@@ -100,6 +100,18 @@ def build_chart(csv_path, output_path, name, code, currency="¥", date_fmt="%Y%m
     dif_ = diff(ema12, ema26); dea_ = ema(dif_, 9)
     macd_hist = mult(diff(dif_, dea_), 2)
     rsi14 = rsi_calc(closes, 14)
+    # KDJ
+    kdjK = [None] * N; kdjD = [None] * N; kdjJ = [None] * N
+    for i in range(N):
+        if i < 8: continue
+        hh = max(highs[i-8:i+1]); ll_ = min(lows[i-8:i+1])
+        rsv = 50.0 if hh == ll_ else (closes[i] - ll_) / (hh - ll_) * 100
+        if i == 8 or kdjK[i-1] is None:
+            kdjK[i] = rsv; kdjD[i] = rsv
+        else:
+            kdjK[i] = 2/3 * kdjK[i-1] + 1/3 * rsv
+            kdjD[i] = 2/3 * kdjD[i-1] + 1/3 * kdjK[i]
+        kdjJ[i] = 3 * kdjK[i] - 2 * kdjD[i]
     gc_5_10 = find_cross(ma5, ma10)
 
     # Stats
@@ -162,16 +174,13 @@ def build_chart(csv_path, output_path, name, code, currency="¥", date_fmt="%Y%m
         "ma5": ma5, "ma10": ma10, "ma20": ma20, "rsi14": rsi14,
         "allHi": all_hi, "allLo": all_lo, "r20Hi": r20_hi, "r20Lo": r20_lo,
         "gcMarkers": gc_markers, "dcMarkers": dc_markers,
+        "kdjK": kdjK, "kdjD": kdjD, "kdjJ": kdjJ,
     }
     data_json = json.dumps(data_obj, ensure_ascii=False, default=lambda x: None if x is None else x)
 
     # Read template
     with open(TEMPLATE_PATH, "r", encoding="utf-8") as f:
         tpl = f.read()
-
-    # Replace title info
-    tpl = tpl.replace("600900.SH", code)
-    tpl = tpl.replace("水电蓝筹 高分红标的", f"半导体制造  {currency} {sp:.0f}→{ep:.0f}")
 
     # Standard placeholders
     reps = {
@@ -199,6 +208,11 @@ def build_chart(csv_path, output_path, name, code, currency="¥", date_fmt="%Y%m
         "__BB_LOWER__": f"{bb_lower[last]:.2f}" if bb_lower[last] else "N/A",
         "__BB_MID_INT__": f"{bb_mid[last]:.0f}" if bb_mid[last] else "N/A",
         "__BB_LOWER_INT__": f"{bb_lower[last]:.0f}" if bb_lower[last] else "N/A",
+        "__STOCK_NAME__": name,
+        "__STOCK_CODE__": code,
+        "__KDJ_K__": f"{kdjK[last]:.2f}" if kdjK[last] is not None else "N/A",
+        "__KDJ_D__": f"{kdjD[last]:.2f}" if kdjD[last] is not None else "N/A",
+        "__KDJ_J__": f"{kdjJ[last]:.2f}" if kdjJ[last] is not None else "N/A",
     }
     for k, v in reps.items():
         tpl = tpl.replace(k, str(v))

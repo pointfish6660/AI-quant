@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>长江电力 (600900.SH) 深度分析</title>
+<title>__STOCK_NAME__ (__STOCK_CODE__) 技术分析</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -38,6 +38,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 #kline-chart{width:100%;height:500px;}
 #vol-chart{width:100%;height:160px;}
 #macd-chart{width:100%;height:200px;}
+#kdj-chart{width:100%;height:160px;}
 .analysis-section{max-width:1200px;margin:20px auto;padding:0 16px;}
 .analysis-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:20px 24px;margin-bottom:14px;line-height:1.8;font-size:14px;}
 .analysis-card h3{font-size:18px;color:#f39c12;margin-bottom:12px;border-bottom:1px solid #21262d;padding-bottom:8px;}
@@ -131,77 +132,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
   <div class="chart-box"><div id="kline-chart"></div></div>
   <div class="chart-box"><div id="vol-chart"></div></div>
   <div class="chart-box"><div id="macd-chart"></div></div>
+  <div class="chart-box"><div id="kdj-chart"></div></div>
 </div>
 
 <div class="analysis-section">
   <div class="analysis-card">
     <h3>📊 近期盘面回顾</h3>
-    <p>长江电力近5个交易日走势：<code>__RECENT_SUMMARY__</code></p>
-    <p>长江电力作为沪市主板水电蓝筹，近一年股价在 ¥25-30 区间震荡，波动率远低于科技成长股，最大单日涨跌幅通常不超过3%。</p>
+    <p>近5个交易日走势：<code>__RECENT_SUMMARY__</code></p>
     <ul>
-      <li><b>区间高价</b>：¥__ALL_HI__，出现在前期上涨行情中</li>
+      <li><b>区间高价</b>：¥__ALL_HI__</li>
       <li><b>区间低价</b>：¥__ALL_LO__</li>
-      <li><b>当前趋势</b>：均线状态 <span class="highlight">__MA_ST__</span> (MA5=__MA5V__, MA10=__MA10V__, MA20=__MA20V__)</li>
-      <li><b>近期特征</b>：水电股属于防御性板块，受市场情绪影响较小，价格主要由基本面和分红预期驱动</li>
-    </ul>
-    <p>长江电力自2003年上市以来始终保持稳定的分红记录，每年至少分红一次（近年改为半年度分红），是A股市场公认的<span class="highlight">"现金奶牛"</span>蓝筹标的。</p>
-  </div>
-
-  <div class="analysis-card">
-    <h3>🔍 技术面分析</h3>
-    <h4>1. 均线系统</h4>
-    <p>当前均线数值：MA5=__MA5V__ | MA10=__MA10V__ | MA20=__MA20V__</p>
-    <p>长江电力作为大盘蓝筹股，均线系统呈现典型的低波动特征。__MA_ST__ 形态下，短期趋势方向性较弱，适合采用网格交易或定投策略。</p>
-    <h4>2. MACD指标</h4>
-    <p>DIF=__DIF__ | DEA=__DEA__ | MACD柱=__MACD_HIST__</p>
-    <p>MACD指标当前处于 __MACD_ST__ 状态，__MACD_DIR__。对于长江电力这种低波动标的，MACD的参考价值相对有限，不宜过度依赖短期指标做交易决策。</p>
-    <h4>3. 布林带分析</h4>
-    <p>布林上轨=__BB_UPPER__ | 中轨=__BB_MID__ | 下轨=__BB_LOWER__</p>
-    <p>股价当前处于 __BB_POS__ 区域（__BB_SIG__），布林带宽度较窄体现了低波动特征。若股价触及下轨可考虑分批建仓。</p>
-    <h4>4. 成交量分析</h4>
-    <p>最新成交量 __VOL_TODAY__ 万手（20日均量 __VOL_AVG__ 万手），当前处于 __VOL_VS_AVG__ 状态。水电股成交量通常较为稳定，放量往往意味着机构调仓而非散户情绪波动。</p>
-    <h4>5. 综合判断</h4>
-    <p><span class="tag tag-bull">防御性配置</span> <span class="tag tag-neutral">低波分红</span></p>
-    <p>长江电力的核心投资价值在于稳定的<span class="highlight">分红收益</span>（年均股息率3%-5%）和股价的防御性特征，技术分析仅作为辅助择时工具。长期持有 + 分红再投资是更适合该标的的策略。</p>
-  </div>
-
-  <div class="analysis-card">
-    <h3>📰 行业与政策面</h3>
-    <h4>行业地位</h4>
-    <ul>
-      <li><b>全球最大水电上市公司</b>：长江电力管理运营三峡、葛洲坝、溪洛渡、向家坝、乌东德、白鹤滩六座梯级电站，总装机容量超71,690MW</li>
-      <li><b>清洁能源龙头</b>：在国家"双碳"战略下，水电作为最成熟的清洁能源，长期受益于能源结构转型</li>
-      <li><b>类债券属性</b>：稳定的现金流和分红使长江电力被视为"准固收类"资产，在低利率环境下估值有支撑</li>
-    </ul>
-    <h4>近期政策与事件</h4>
-    <ul>
-      <li><b>电力市场化改革</b>：电价市场化改革稳步推进，水电电价相对稳定，受改革影响可控</li>
-      <li><b>来水量影响</b>：长江流域来水量是影响发电量的核心变量，丰水年通常对应更高利润</li>
-      <li><b>分红政策持续</b>：公司承诺高分红率，近年分红率维持在70%以上，每半年分红一次</li>
-      <li><b>抽水蓄能布局</b>：公司积极布局抽水蓄能电站，打造"水风光储"一体化清洁能源平台</li>
+      <li><b>当前均线</b>：<span class="highlight">__MA_ST__</span> (MA5=__MA5V__, MA10=__MA10V__, MA20=__MA20V__)</li>
+      <li><b>KDJ 指标</b>：K=__KDJ_K__ D=__KDJ_D__ J=__KDJ_J__</li>
     </ul>
   </div>
 
   <div class="analysis-card">
-    <h3>🏢 基本面分析</h3>
-    <h4>公司概况</h4>
-    <p><b>长江电力股份有限公司</b>（CYPC, SH:600900），成立于2002年，2003年11月在上交所上市。总部位于北京，是全球最大的水电上市公司。</p>
-    <p><b>核心业务</b>：水力发电、配售电以及海外电站运营。拥有三峡、葛洲坝、溪洛渡、向家坝、乌东德、白鹤滩等世界级水电站的运营权，总装机容量超7,170万千瓦。</p>
-    <p><b>行业地位</b>：<span class="highlight">全球水电行业绝对龙头</span>，国内水电市场份额超60%。由三峡集团控股，实控人为国务院国资委。</p>
-    <h4>核心投资逻辑</h4>
-    <ol>
-      <li><b>稳定现金流</b>：水电站建成后运营成本极低，发电即变现，具备"印钞机"属性</li>
-      <li><b>高分红策略</b>：承诺分红率不低于70%，近年实际分红率更高，年化股息率约3-5%</li>
-      <li><b>清洁能源溢价</b>：在碳中和背景下，水电作为零碳基荷能源，长期价值重估趋势明确</li>
-      <li><b>抽水蓄能增长极</b>：积极布局抽水蓄能，打造第二增长曲线</li>
-    </ol>
-    <h4>风险因素</h4>
-    <ol>
-      <li><span class="warn">来水量不确定</span>：发电量与长江流域来水量直接相关，干旱年份利润会受影响</li>
-      <li><b>电价政策变化</b>：市场化改革可能导致电价波动</li>
-      <li><b>大规模资本开支</b>：抽水蓄能等新项目需要大量投资，可能影响短期分红</li>
-      <li><b>单一流域风险</b>：公司电站均位于长江流域，极端气候事件影响集中</li>
-    </ol>
+    <h3>🔍 技术指标分析</h3>
+    <h4>1. 均线系统 — __MA_ST__</h4>
+    <p>当前 MA5(__MA5V__) / MA10(__MA10V__) / MA20(__MA20V__)。均线排列状态反映短期趋势方向。</p>
+    <h4>2. MACD 指标 — __MACD_ST__</h4>
+    <p>DIF=__DIF__ | DEA=__DEA__ | 柱=__MACD_HIST__。__MACD_DIR__，MACD 用于判断趋势强度和转折点。</p>
+    <h4>3. KDJ 指标</h4>
+    <p>K=__KDJ_K__ | D=__KDJ_D__ | J=__KDJ_J__。K>80为超买区，K<20为超卖区；K上穿D为金叉信号，K下穿D为死叉信号。</p>
+    <h4>4. 布林带 — __BB_POS__ (__BB_SIG__)</h4>
+    <p>上轨=__BB_UPPER__ | 中轨=__BB_MID__ | 下轨=__BB_LOWER__。股价在中轨之上偏强，中轨之下偏弱。</p>
+    <h4>5. RSI(14) = __RSI__</h4>
+    <p>RSI>70 超买，RSI<30 超卖，40-60 为中性区间。</p>
+    <h4>6. 成交量</h4>
+    <p>最新 __VOL_TODAY__ 万手（20日均 __VOL_AVG__ 万手），__VOL_VS_AVG__。</p>
+  </div>
+
+  <div class="analysis-card">
+    <h3>📖 指标说明</h3>
+    <h4>MA 移动平均线</h4>
+    <p>MA5/MA10/MA20 分别代表5/10/20日均线。金叉(MA5上穿MA10)为买入信号，死叉(MA5下穿MA10)为卖出信号。__MA_ST__ 反映当前均线排列状态。</p>
+    <h4>MACD 指数平滑异同移动平均线</h4>
+    <p>DIF(快线)上穿 DEA(慢线)为金叉，下穿为死叉。红柱（正值）表示多头动能，绿柱（负值）表示空头动能。</p>
+    <h4>KDJ 随机指标</h4>
+    <p>K线为快速确认线，D线为慢速主干线，J线为方向敏感线。J值>100为超买，J值<0为超卖。K上穿D为短期金叉。</p>
+    <h4>布林带 Bollinger Bands</h4>
+    <p>由中轨(20日均线)、上轨(中轨+2σ)、下轨(中轨-2σ)组成。股价触及上轨可能回调，触及下轨可能反弹。</p>
+    <h4>RSI 相对强弱指标</h4>
+    <p>衡量近期价格变动的速度和幅度。>70 超买区域，警惕回调；<30 超卖区域，可能反弹。</p>
   </div>
 
   <div class="analysis-card">
@@ -248,8 +221,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micr
 </div>
 
 <div class="footer">
-  数据来源: Tushare Pro / 腾讯财经 &nbsp;|&nbsp; 长江电力 600900.SH &nbsp;|&nbsp; 生成: __DATE_TO__<br>
-  分析维度: 技术面 + 消息面 + 基本面 &nbsp;|&nbsp; K线 + 布林带 + MACD + RSI &nbsp;|&nbsp; 仅供参考，不构成投资建议
+  数据来源: 腾讯行情 / Tushare &nbsp;|&nbsp; __STOCK_NAME__ __STOCK_CODE__ &nbsp;|&nbsp; 生成: __DATE_TO__<br>
+  技术指标: K线 + MA + MACD + KDJ + 布林带 + RSI &nbsp;|&nbsp; 仅供参考，不构成投资建议
 </div>
 
 <script>
@@ -343,10 +316,31 @@ mch.setOption({
   ]
 });
 
+// ── KDJ Chart ──
+var kdjch = echarts.init(document.getElementById("kdj-chart"));
+kdjch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: { trigger: "axis", backgroundColor: "rgba(13,17,23,0.96)", borderColor: "#21262d", textStyle: { color: "#c9d1d9", fontSize: 12 }, formatter: function(ps) { var i = ps[0].dataIndex; if (D.kdjK[i] == null) return ""; return D.dates[i] + "<br>K <b style='color:#e67e22'>" + D.kdjK[i].toFixed(2) + "</b> D <b style='color:#3498db'>" + D.kdjD[i].toFixed(2) + "</b> J <b style='color:#e74c3c'>" + D.kdjJ[i].toFixed(2) + "</b>"; } },
+  legend: { data: ["K", "D", "J"], top: 4, left: 50, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 36, bottom: 24 },
+  xAxis: { type: "category", data: D.dates, axisLine: { lineStyle: { color: "#21262d" } }, axisLabel: { color: "#484f58", fontSize: 9, formatter: function(v) { return v.substring(5); }, rotate: 45 }, axisTick: { show: false }, splitLine: { show: false } },
+  yAxis: { type: "value", name: "KDJ", nameTextStyle: { color: "#484f58", fontSize: 11 }, min: 0, max: 100, splitLine: { lineStyle: { color: "#21262d", type: "dashed" } }, axisLabel: { color: "#484f58", fontSize: 10 }, axisLine: { show: false } },
+  dataZoom: [ { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 }, { type: "slider", start: ZS, end: ZE, height: 18, bottom: 2 } ],
+  series: [
+    { name: "K", type: "line", data: D.kdjK, symbol: "none", lineStyle: { width: 1.2, color: "#e67e22" } },
+    { name: "D", type: "line", data: D.kdjD, symbol: "none", lineStyle: { width: 1.2, color: "#3498db" } },
+    { name: "J", type: "line", data: D.kdjJ, symbol: "none", lineStyle: { width: 1, color: "#e74c3c", type: "dashed" } },
+    { name: "超买线80", type: "line", data: [], markLine: { silent: true, symbol: "none", lineStyle: { color: "#e74c3c", type: "dashed", width: 1 }, label: { color: "#e74c3c", fontSize: 9 }, data: [{ yAxis: 80, name: "超买" }] } },
+    { name: "超卖线20", type: "line", data: [], markLine: { silent: true, symbol: "none", lineStyle: { color: "#2ecc71", type: "dashed", width: 1 }, label: { color: "#2ecc71", fontSize: 9 }, data: [{ yAxis: 20, name: "超卖" }] } }
+  ]
+});
+
 // Sync zoom
 kch.group = "sync";
 vch.group = "sync";
 mch.group = "sync";
+kdjch.group = "sync";
 echarts.connect("sync");
 
 // Responsive

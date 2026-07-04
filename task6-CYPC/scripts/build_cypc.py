@@ -96,6 +96,28 @@ dea_ = ema(dif_, 9)
 macd_hist = mult(diff(dif_, dea_), 2)
 rsi14 = rsi_calc(closes, 14)
 
+# ── KDJ calculation ──
+def calc_kdj(highs, lows, closes, n=9):
+    K = [None] * len(closes)
+    D = [None] * len(closes)
+    J = [None] * len(closes)
+    for i in range(len(closes)):
+        if i < n - 1:
+            continue
+        hh = max(highs[i - n + 1:i + 1])
+        ll = min(lows[i - n + 1:i + 1])
+        rsv = 50.0 if hh == ll else (closes[i] - ll) / (hh - ll) * 100
+        if i == n - 1 or K[i - 1] is None:
+            K[i] = rsv
+            D[i] = rsv
+        else:
+            K[i] = 2/3 * K[i - 1] + 1/3 * rsv
+            D[i] = 2/3 * D[i - 1] + 1/3 * K[i]
+        J[i] = 3 * K[i] - 2 * D[i]
+    return K, D, J
+
+kdjK, kdjD, kdjJ = calc_kdj(highs, lows, closes)
+
 def find_cross(a, b):
     c = []
     for i in range(1, len(a)):
@@ -189,6 +211,7 @@ data_obj = {
     "ma5": ma5, "ma10": ma10, "ma20": ma20, "rsi14": rsi14,
     "allHi": all_hi, "allLo": all_lo, "r20Hi": r20_hi, "r20Lo": r20_lo,
     "gcMarkers": gc_markers, "dcMarkers": dc_markers,
+    "kdjK": kdjK, "kdjD": kdjD, "kdjJ": kdjJ,
 }
 data_json = json.dumps(data_obj, ensure_ascii=False, default=lambda x: None if x is None else x)
 
@@ -240,6 +263,14 @@ template = template.replace("__BB_MID__", f"{bb_mid[last]:.2f}" if bb_mid[last] 
 template = template.replace("__BB_LOWER__", f"{bb_lower[last]:.2f}" if bb_lower[last] else "N/A")
 template = template.replace("__BB_MID_INT__", f"{bb_mid[last]:.0f}" if bb_mid[last] else "N/A")
 template = template.replace("__BB_LOWER_INT__", f"{bb_lower[last]:.0f}" if bb_lower[last] else "N/A")
+template = template.replace("__STOCK_NAME__", "长江电力")
+template = template.replace("__STOCK_CODE__", "600900.SH")
+kdj_k = f"{kdjK[last]:.2f}" if kdjK[last] is not None else "N/A"
+kdj_d = f"{kdjD[last]:.2f}" if kdjD[last] is not None else "N/A"
+kdj_j = f"{kdjJ[last]:.2f}" if kdjJ[last] is not None else "N/A"
+template = template.replace("__KDJ_K__", kdj_k)
+template = template.replace("__KDJ_D__", kdj_d)
+template = template.replace("__KDJ_J__", kdj_j)
 
 OUT = os.path.join(ROOT, "outputs", "cypc_kline.html")
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
@@ -253,3 +284,4 @@ print(f"  MA: {ma_st} ({ma5v}/{ma10v}/{ma20v})")
 print(f"  MACD: DIF={dif_[last]:.2f} DEA={dea_[last]:.2f} Hist={macd_hist[last]:.2f}")
 print(f"  GC markers: {len(gc_markers)}, DC markers: {len(dc_markers)}")
 print(f"  RSI(14): {rsi_last:.0f}, BB: {bb_pos}")
+print(f"  KDJ: K={kdj_k} D={kdj_d} J={kdj_j}")

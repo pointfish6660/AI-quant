@@ -67,7 +67,17 @@ def build(csv_path, out_path, code, curr, date_fmt):
     bl=[bm[i]-2*bs[i] if bm[i] else None for i in range(N)]
     e12,e26=ema(closes,12),ema(closes,26)
     di=diff_fn(e12,e26); de=ema(di,9); mh=mul(diff_fn(di,de),2)
-    r14=rsi(closes); gc=find_cross(ma5,ma10)
+    r14=rsi(closes)
+    # KDJ
+    K=[None]*N; D_=[None]*N; J=[None]*N
+    for i in range(N):
+        if i<8: continue
+        hh=max(highs[i-8:i+1]); ll_=min(lows[i-8:i+1])
+        rsv=50.0 if hh==ll_ else (closes[i]-ll_)/(hh-ll_)*100
+        if i==8 or K[i-1] is None: K[i]=rsv; D_[i]=rsv
+        else: K[i]=2/3*K[i-1]+1/3*rsv; D_[i]=2/3*D_[i-1]+1/3*K[i]
+        J[i]=3*K[i]-2*D_[i]
+    gc=find_cross(ma5,ma10)
 
     sp,ep=closes[0],closes[-1]; chg=ep-sp; cpct=(ep/sp-1)*100
     ah=max(highs); al_=min(lows); r20h=max(highs[-20:]); r20l=min(lows[-20:])
@@ -110,12 +120,10 @@ def build(csv_path, out_path, code, curr, date_fmt):
     dob={"dates":dates,"opens":[round(x,2) for x in opens],"closes":closes,"highs":highs,
          "lows":lows,"vols":vols,"pcts":pcts,"bbUpper":bu,"bbMid":bm,"bbLower":bl,
          "dif":di,"dea":de,"macdHist":mh,"ma5":ma5,"ma10":ma10,"ma20":ma20,"rsi14":r14,
-         "allHi":ah,"allLo":al_,"r20Hi":r20h,"r20Lo":r20l,"gcMarkers":gm,"dcMarkers":dm}
+         "allHi":ah,"allLo":al_,"r20Hi":r20h,"r20Lo":r20l,"gcMarkers":gm,"dcMarkers":dm,"kdjK":K,"kdjD":D_,"kdjJ":J}
     dj=json.dumps(dob,ensure_ascii=False,default=lambda x:None if x is None else x)
 
     with open(TP,"r",encoding="utf-8") as f: tpl=f.read()
-    tpl=tpl.replace("600900.SH",code)
-    tpl=tpl.replace("水电蓝筹 高分红标的",f"新能源汽车龙头  {curr}{sp:.0f}→{ep:.0f}")
     reps={"__DATA_JSON__":dj,"__DATE_FROM__":dates[0],"__DATE_TO__":dates[-1],
           "__N_DAYS__":str(N),"__END_PRICE__":f"{ep:.2f}","__START_PRICE__":f"{sp:.2f}",
           "__CHG__":f"{'+'if chg>=0 else ''}{chg:.2f}",
@@ -135,7 +143,12 @@ def build(csv_path, out_path, code, curr, date_fmt):
           "__BB_MID__":f"{bm[l]:.2f}" if bm[l] else "N/A",
           "__BB_LOWER__":f"{bl[l]:.2f}" if bl[l] else "N/A",
           "__BB_MID_INT__":f"{bm[l]:.0f}" if bm[l] else "N/A",
-          "__BB_LOWER_INT__":f"{bl[l]:.0f}" if bl[l] else "N/A"}
+          "__BB_LOWER_INT__":f"{bl[l]:.0f}" if bl[l] else "N/A",
+          "__STOCK_NAME__":"比亚迪",
+          "__STOCK_CODE__":code,
+          "__KDJ_K__":f"{K[l]:.2f}" if K[l] is not None else "N/A",
+          "__KDJ_D__":f"{D_[l]:.2f}" if D_[l] is not None else "N/A",
+          "__KDJ_J__":f"{J[l]:.2f}" if J[l] is not None else "N/A"}
     for k,v in reps.items(): tpl=tpl.replace(k,str(v))
     os.makedirs(os.path.dirname(out_path),exist_ok=True)
     with open(out_path,"w",encoding="utf-8") as f: f.write(tpl)
