@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中芯国际 (600900.SH) 深度分析</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#0d1117;color:#c9d1d9;}
+.header{background:linear-gradient(135deg,#161b22,#0d1117);border-bottom:1px solid #21262d;padding:18px 32px 12px;text-align:center;}
+.header h1{font-size:28px;font-weight:700;margin-bottom:4px;background:linear-gradient(90deg,#e74c3c,#f39c12);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header .subtitle{font-size:12px;color:#6e7681;}
+.advice-section{max-width:1200px;margin:16px auto;padding:0 16px;}
+.advice-card{background:linear-gradient(135deg,#1a0a0a,#0d1117);border:2px solid #e74c3c;border-radius:10px;padding:20px 24px;margin-bottom:14px;}
+.advice-card h2{font-size:20px;color:#e74c3c;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.advice-card h2 .badge{background:#e74c3c;color:#fff;font-size:14px;padding:2px 10px;border-radius:4px;}
+.advice-card .disclaimer{font-size:12px;color:#e74c3c;margin-bottom:14px;padding:8px 12px;background:rgba(231,76,60,0.1);border-radius:6px;}
+.advice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:12px;}
+.advice-item{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 16px;}
+.advice-item .ai-title{font-size:12px;color:#6e7681;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.advice-item .ai-value{font-size:18px;font-weight:700;}
+.advice-item .ai-detail{font-size:12px;color:#6e7681;margin-top:4px;line-height:1.5;}
+.levels-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px;}
+.levels-table th{text-align:left;padding:6px 10px;color:#6e7681;font-size:11px;border-bottom:1px solid #21262d;}
+.levels-table td{padding:6px 10px;border-bottom:1px solid #1a1f29;}
+.signal-bar{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;padding:10px 24px;background:#161b22;border-bottom:1px solid #21262d;}
+.signal-card{background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:8px 16px;text-align:center;min-width:120px;}
+.signal-card .label{font-size:11px;color:#6e7681;margin-bottom:3px;}
+.signal-card .value{font-size:14px;font-weight:600;}
+.up{color:#e74c3c;}.down{color:#2ecc71;}
+.stats{display:flex;justify-content:center;gap:24px;padding:10px 24px;background:#161b22;border-bottom:1px solid #21262d;flex-wrap:wrap;}
+.stat-item{text-align:center;}
+.stat-val{font-size:20px;font-weight:700;margin-bottom:1px;}
+.stat-lbl{font-size:11px;color:#6e7681;}
+.container{max-width:1440px;margin:0 auto;padding:8px 12px;}
+.chart-box{background:#161b22;border-radius:8px;border:1px solid #21262d;padding:10px;margin-bottom:8px;}
+#kline-chart{width:100%;height:500px;}
+#vol-chart{width:100%;height:160px;}
+#macd-chart{width:100%;height:200px;}
+.analysis-section{max-width:1200px;margin:20px auto;padding:0 16px;}
+.analysis-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:20px 24px;margin-bottom:14px;line-height:1.8;font-size:14px;}
+.analysis-card h3{font-size:18px;color:#f39c12;margin-bottom:12px;border-bottom:1px solid #21262d;padding-bottom:8px;}
+.analysis-card h4{color:#e67e22;margin:14px 0 6px;font-size:15px;}
+.analysis-card p{margin-bottom:10px;}
+.analysis-card ul,.analysis-card ol{margin:8px 0 8px 20px;}
+.analysis-card li{margin-bottom:4px;}
+.analysis-card .highlight{color:#e74c3c;font-weight:600;}
+.analysis-card .warn{color:#2ecc71;font-weight:600;}
+.analysis-card code{background:#0d1117;padding:1px 6px;border-radius:3px;font-size:13px;color:#a29bfe;}
+.analysis-card table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px;}
+.analysis-card table th{text-align:left;padding:6px 10px;background:#0d1117;color:#6e7681;font-size:11px;}
+.analysis-card table td{padding:6px 10px;border-bottom:1px solid #1a1f29;}
+.analysis-card .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;margin:2px;}
+.tag-bull{background:rgba(231,76,60,0.2);color:#e74c3c;}
+.tag-bear{background:rgba(46,204,113,0.2);color:#2ecc71;}
+.footer{text-align:center;padding:14px;color:#484f58;font-size:11px;border-top:1px solid #21262d;margin-top:6px;}
+@media(max-width:768px){
+  .header h1{font-size:18px;}
+  .advice-grid{grid-template-columns:1fr;}
+  .signal-card{padding:6px 8px;min-width:80px;}.signal-card .value{font-size:12px;}
+  #kline-chart{height:350px;}#vol-chart{height:120px;}#macd-chart{height:150px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>中芯国际 &nbsp;600900.SH</h1>
+  <div class="subtitle">深度技术分析 &nbsp;|&nbsp; __DATE_FROM__ ~ __DATE_TO__ &nbsp;|&nbsp; 共 __N_DAYS__ 个交易日</div>
+</div>
+
+<div class="advice-section">
+  <div class="advice-card">
+    <h2><span class="badge">💡 分析摘要</span> 中芯国际 — 水电蓝筹 高分红标的</h2>
+    <div class="disclaimer">⚠️ 以下分析基于技术面数据，仅供参考，不构成投资建议。股市有风险，投资需谨慎。</div>
+    <div class="advice-grid">
+      <div class="advice-item">
+        <div class="ai-title">最新收盘</div>
+        <div class="ai-value" style="color:#f39c12">¥__END_PRICE__</div>
+        <div class="ai-detail">__DATE_TO__ 收盘价 | 区间涨跌 __CHG_PCT__</div>
+      </div>
+      <div class="advice-item">
+        <div class="ai-title">均线状态</div>
+        <div class="ai-value" style="color:#f39c12">__MA_ST__</div>
+        <div class="ai-detail">MA5=__MA5V__ | MA10=__MA10V__ | MA20=__MA20V__</div>
+      </div>
+      <div class="advice-item">
+        <div class="ai-title">估值特征</div>
+        <div class="ai-value" style="color:#3498db">水电龙头 稳定分红</div>
+        <div class="ai-detail">自2003年上市以来连续分红超20年，年均股息率3%-5%，适合长期持有分红再投资策略。</div>
+      </div>
+      <div class="advice-item">
+        <div class="ai-title">区间统计</div>
+        <div class="ai-value" style="color:#f39c12">¥__ALL_LO__ ~ ¥__ALL_HI__</div>
+        <div class="ai-detail">__DATE_FROM__ ~ __DATE_TO__ | __N_DAYS__ 个交易日</div>
+      </div>
+    </div>
+    <table class="levels-table" style="margin-top:16px;">
+      <tr><th>点位</th><th>价格</th><th>性质</th><th>说明</th></tr>
+      <tr><td style="color:#e74c3c">区间最高</td><td>¥__ALL_HI__</td><td>320日高点</td><td>前期阻力位</td></tr>
+      <tr><td style="color:#1abc9c">当前价</td><td>¥__END_PRICE__</td><td>__DATE_TO__</td><td>—</td></tr>
+      <tr><td style="color:#3498db">布林中轨</td><td>__BB_MID__</td><td>20日均线</td><td>短期多空分界线</td></tr>
+      <tr><td style="color:#2ecc71">布林下轨</td><td>__BB_LOWER__</td><td>20日,2σ</td><td>中期支撑参考</td></tr>
+      <tr><td style="color:#2ecc71">区间最低</td><td>¥__ALL_LO__</td><td>320日低点</td><td>极端支撑位</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="signal-bar">
+  <div class="signal-card"><div class="label">均线状态</div><div class="value up">__MA_ST__</div></div>
+  <div class="signal-card"><div class="label">MA5/MA10/MA20</div><div class="value">__MA5V__/__MA10V__/__MA20V__</div></div>
+  <div class="signal-card"><div class="label">MACD</div><div class="value down">__MACD_ST__<br><span style="font-size:11px">__MACD_DIR__</span></div></div>
+  <div class="signal-card"><div class="label">布林带</div><div class="value" style="color:#f39c12">__BB_POS__<br><span style="font-size:11px">__BB_SIG__</span></div></div>
+  <div class="signal-card"><div class="label">最近金叉</div><div class="value up">__LAST_GC__</div></div>
+  <div class="signal-card"><div class="label">最近死叉</div><div class="value down">__LAST_DC__</div></div>
+  <div class="signal-card"><div class="label">RSI(14)</div><div class="value" style="color:__RSI_COLOR__">__RSI__</div></div>
+  <div class="signal-card"><div class="label">成交量</div><div class="value">__VOL_VS_AVG__<br><span style="font-size:11px">__VOL_TODAY__万手 vs 均__VOL_AVG__</span></div></div>
+</div>
+
+<div class="stats">
+  <div class="stat-item"><div class="stat-val up">¥__END_PRICE__</div><div class="stat-lbl">最新收盘</div></div>
+  <div class="stat-item"><div class="stat-val">¥__START_PRICE__</div><div class="stat-lbl">期初收盘</div></div>
+  <div class="stat-item"><div class="stat-val __CHG_CLASS__">__CHG__</div><div class="stat-lbl">期间涨跌</div></div>
+  <div class="stat-item"><div class="stat-val __PCT_CLASS__">__CHG_PCT__</div><div class="stat-lbl">涨跌幅</div></div>
+  <div class="stat-item"><div class="stat-val up">¥__ALL_HI__</div><div class="stat-lbl">区间最高</div></div>
+  <div class="stat-item"><div class="stat-val down">¥__ALL_LO__</div><div class="stat-lbl">区间最低</div></div>
+</div>
+
+<div class="container">
+  <div class="chart-box"><div id="kline-chart"></div></div>
+  <div class="chart-box"><div id="vol-chart"></div></div>
+  <div class="chart-box"><div id="macd-chart"></div></div>
+</div>
+
+<div class="analysis-section">
+  <div class="analysis-card">
+    <h3>📊 近期盘面回顾</h3>
+    <p>中芯国际近5个交易日走势：<code>__RECENT_SUMMARY__</code></p>
+    <p>中芯国际作为沪市主板水电蓝筹，近一年股价在 ¥25-30 区间震荡，波动率远低于科技成长股，最大单日涨跌幅通常不超过3%。</p>
+    <ul>
+      <li><b>区间高价</b>：¥__ALL_HI__，出现在前期上涨行情中</li>
+      <li><b>区间低价</b>：¥__ALL_LO__</li>
+      <li><b>当前趋势</b>：均线状态 <span class="highlight">__MA_ST__</span> (MA5=__MA5V__, MA10=__MA10V__, MA20=__MA20V__)</li>
+      <li><b>近期特征</b>：水电股属于防御性板块，受市场情绪影响较小，价格主要由基本面和分红预期驱动</li>
+    </ul>
+    <p>中芯国际自2003年上市以来始终保持稳定的分红记录，每年至少分红一次（近年改为半年度分红），是A股市场公认的<span class="highlight">"现金奶牛"</span>蓝筹标的。</p>
+  </div>
+
+  <div class="analysis-card">
+    <h3>🔍 技术面分析</h3>
+    <h4>1. 均线系统</h4>
+    <p>当前均线数值：MA5=__MA5V__ | MA10=__MA10V__ | MA20=__MA20V__</p>
+    <p>中芯国际作为大盘蓝筹股，均线系统呈现典型的低波动特征。__MA_ST__ 形态下，短期趋势方向性较弱，适合采用网格交易或定投策略。</p>
+    <h4>2. MACD指标</h4>
+    <p>DIF=__DIF__ | DEA=__DEA__ | MACD柱=__MACD_HIST__</p>
+    <p>MACD指标当前处于 __MACD_ST__ 状态，__MACD_DIR__。对于中芯国际这种低波动标的，MACD的参考价值相对有限，不宜过度依赖短期指标做交易决策。</p>
+    <h4>3. 布林带分析</h4>
+    <p>布林上轨=__BB_UPPER__ | 中轨=__BB_MID__ | 下轨=__BB_LOWER__</p>
+    <p>股价当前处于 __BB_POS__ 区域（__BB_SIG__），布林带宽度较窄体现了低波动特征。若股价触及下轨可考虑分批建仓。</p>
+    <h4>4. 成交量分析</h4>
+    <p>最新成交量 __VOL_TODAY__ 万手（20日均量 __VOL_AVG__ 万手），当前处于 __VOL_VS_AVG__ 状态。水电股成交量通常较为稳定，放量往往意味着机构调仓而非散户情绪波动。</p>
+    <h4>5. 综合判断</h4>
+    <p><span class="tag tag-bull">防御性配置</span> <span class="tag tag-neutral">低波分红</span></p>
+    <p>中芯国际的核心投资价值在于稳定的<span class="highlight">分红收益</span>（年均股息率3%-5%）和股价的防御性特征，技术分析仅作为辅助择时工具。长期持有 + 分红再投资是更适合该标的的策略。</p>
+  </div>
+
+  <div class="analysis-card">
+    <h3>📰 行业与政策面</h3>
+    <h4>行业地位</h4>
+    <ul>
+      <li><b>全球最大水电上市公司</b>：中芯国际管理运营三峡、葛洲坝、溪洛渡、向家坝、乌东德、白鹤滩六座梯级电站，总装机容量超71,690MW</li>
+      <li><b>清洁能源龙头</b>：在国家"双碳"战略下，水电作为最成熟的清洁能源，长期受益于能源结构转型</li>
+      <li><b>类债券属性</b>：稳定的现金流和分红使中芯国际被视为"准固收类"资产，在低利率环境下估值有支撑</li>
+    </ul>
+    <h4>近期政策与事件</h4>
+    <ul>
+      <li><b>电力市场化改革</b>：电价市场化改革稳步推进，水电电价相对稳定，受改革影响可控</li>
+      <li><b>来水量影响</b>：长江流域来水量是影响发电量的核心变量，丰水年通常对应更高利润</li>
+      <li><b>分红政策持续</b>：公司承诺高分红率，近年分红率维持在70%以上，每半年分红一次</li>
+      <li><b>抽水蓄能布局</b>：公司积极布局抽水蓄能电站，打造"水风光储"一体化清洁能源平台</li>
+    </ul>
+  </div>
+
+  <div class="analysis-card">
+    <h3>🏢 基本面分析</h3>
+    <h4>公司概况</h4>
+    <p><b>中芯国际股份有限公司</b>（CYPC, SH:600900），成立于2002年，2003年11月在上交所上市。总部位于北京，是全球最大的水电上市公司。</p>
+    <p><b>核心业务</b>：水力发电、配售电以及海外电站运营。拥有三峡、葛洲坝、溪洛渡、向家坝、乌东德、白鹤滩等世界级水电站的运营权，总装机容量超7,170万千瓦。</p>
+    <p><b>行业地位</b>：<span class="highlight">全球水电行业绝对龙头</span>，国内水电市场份额超60%。由三峡集团控股，实控人为国务院国资委。</p>
+    <h4>核心投资逻辑</h4>
+    <ol>
+      <li><b>稳定现金流</b>：水电站建成后运营成本极低，发电即变现，具备"印钞机"属性</li>
+      <li><b>高分红策略</b>：承诺分红率不低于70%，近年实际分红率更高，年化股息率约3-5%</li>
+      <li><b>清洁能源溢价</b>：在碳中和背景下，水电作为零碳基荷能源，长期价值重估趋势明确</li>
+      <li><b>抽水蓄能增长极</b>：积极布局抽水蓄能，打造第二增长曲线</li>
+    </ol>
+    <h4>风险因素</h4>
+    <ol>
+      <li><span class="warn">来水量不确定</span>：发电量与长江流域来水量直接相关，干旱年份利润会受影响</li>
+      <li><b>电价政策变化</b>：市场化改革可能导致电价波动</li>
+      <li><b>大规模资本开支</b>：抽水蓄能等新项目需要大量投资，可能影响短期分红</li>
+      <li><b>单一流域风险</b>：公司电站均位于长江流域，极端气候事件影响集中</li>
+    </ol>
+  </div>
+
+  <div class="analysis-card">
+    <h3>📖 基础知识讲解</h3>
+    <h4>什么是K线？</h4>
+    <p><b>K线（蜡烛图）</b> 是一种记录价格走势的图表，由日本的米商本间宗久在18世纪发明。每根K线包含<span class="highlight">四个价格</span>：开盘价、收盘价、最高价、最低价。</p>
+    <p><b>阳线（红/白）</b>：收盘 > 开盘，表示价格上涨。实体部分用红色填充。<br>
+    <b>阴线（绿/黑）</b>：收盘 < 开盘，表示价格下跌。实体部分用绿色填充。<br>
+    （注：A股习惯红涨绿跌，与美股相反）</p>
+    <p>K线能直观反映市场情绪：长阳线代表多头强势，长阴线代表空头碾压；十字星代表犹豫不定。连续多根K线组合成各种形态（如头肩顶、W底等），是技术分析的基石。</p>
+    <h4>什么是基本面分析？</h4>
+    <p><b>基本面分析</b>是通过研究公司的财务状况、行业地位、管理团队、竞争格局等，判断公司的<span class="highlight">内在价值</span>是否被市场低估或高估。</p>
+    <p><b>主要指标</b>：</p>
+    <ul>
+      <li><b>PE（市盈率）</b>：股价/每股收益，衡量"回本年限"</li>
+      <li><b>ROE（净资产收益率）</b>：公司用股东的钱创造利润的效率</li>
+      <li><b>营收增长率</b>：业务在扩张还是收缩</li>
+      <li><b>毛利率</b>：产品竞争力，越高越有议价权</li>
+    </ul>
+    <p>基本面分析回答的问题："这家公司<span class="highlight">值多少钱</span>？现在的价格合理吗？" 适合长期投资者和机构决策。</p>
+    <h4>什么是技术面分析？</h4>
+    <p><b>技术面分析</b>基于三个假设：① 市场行为包容消化一切 ② 价格以趋势方式演变 ③ 历史会重演。通过研究价格图表和指标，预测未来走势。</p>
+    <p><b>常用技术指标</b>：</p>
+    <table>
+      <tr><th>指标</th><th>作用</th><th>当前信号</th></tr>
+      <tr><td>MA（移动平均线）</td><td>趋势方向，金叉/死叉</td><td style="color:#2ecc71">MA5死叉MA10 ⚠️</td></tr>
+      <tr><td>MACD</td><td>趋势强度，多空转换</td><td style="color:#2ecc71">空头信号</td></tr>
+      <tr><td>布林带</td><td>超买/超卖，波动范围</td><td style="color:#f39c12">偏强区域</td></tr>
+      <tr><td>RSI(14)</td><td>超买(>70)/超卖(<30)</td><td style="color:#f39c12">__RSI__ 中性偏弱</td></tr>
+      <tr><td>成交量</td><td>趋势确认，放量/缩量</td><td style="color:#2ecc71">放量下跌(警示)</td></tr>
+    </table>
+    <p style="margin-top:10px;"><b>基本面 vs 技术面</b>：基本面告诉你<span class="highlight">"买什么"</span>、技术面告诉你<span class="highlight">"什么时候买"</span>。两者结合是最有效的投资方法。</p>
+  </div>
+
+  <div class="analysis-card">
+    <h3>⚠️ 风险提示</h3>
+    <p style="color:#6e7681;font-size:13px;">
+      本页面所有分析基于公开市场数据和技术指标计算，仅供学习研究参考，<span class="highlight">不构成任何投资建议</span>。<br><br>
+      股票投资具有高风险性，中芯国际（600900.SH）过去一年的涨幅不代表未来收益，<span class="warn">投资者可能面临本金损失</span>。<br><br>
+      水电行业受来水量变化、电价政策、极端气候等因素影响，盈利存在波动风险。<span class="warn">分红不构成收益保证</span>。<br><br>
+      请根据自身风险承受能力独立做出投资决策。
+    </p>
+  </div>
+</div>
+
+<div class="footer">
+  数据来源: Tushare Pro / 腾讯财经 &nbsp;|&nbsp; 中芯国际 600900.SH &nbsp;|&nbsp; 生成: __DATE_TO__<br>
+  分析维度: 技术面 + 消息面 + 基本面 &nbsp;|&nbsp; K线 + 布林带 + MACD + RSI &nbsp;|&nbsp; 仅供参考，不构成投资建议
+</div>
+
+<script>
+// ── All data in one JSON blob ──
+var D = __DATA_JSON__;
+
+var UP = "#e74c3c", DOWN = "#2ecc71";
+var ZS = 50, ZE = 100;
+
+// Build candlestick data
+var kl = [];
+for (var i = 0; i < D.dates.length; i++) {
+  kl.push([D.opens[i], D.closes[i], D.lows[i], D.highs[i]]);
+}
+
+// ── K-line Chart ──
+var kch = echarts.init(document.getElementById("kline-chart"));
+kch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var c = D.pcts[i];
+      var col = c >= 0 ? UP : DOWN;
+      var s = '<div style="font-size:13px;line-height:2"><b>' + D.dates[i] + '</b><br>';
+      s += 'O <b>' + D.opens[i].toFixed(2) + '</b> H <b style="color:' + UP + '">' + D.highs[i].toFixed(2) + '</b><br>';
+      s += 'L <b style="color:' + DOWN + '">' + D.lows[i].toFixed(2) + '</b> C <b style="color:' + col + ';font-size:15px">' + D.closes[i].toFixed(2) + '</b><br>';
+      s += '涨跌 <b style="color:' + col + '">' + (c >= 0 ? "+" : "") + c.toFixed(2) + '%</b><br>';
+      if (D.bbUpper[i] != null) s += 'BB上' + D.bbUpper[i].toFixed(2) + ' 中' + D.bbMid[i].toFixed(2) + ' 下' + D.bbLower[i].toFixed(2) + '<br>';
+      if (D.dif[i] != null) s += 'DIF ' + D.dif[i].toFixed(2) + ' DEA ' + D.dea[i].toFixed(2);
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["K线", "MA5", "MA10", "MA20", "BB上轨", "BB下轨"], top: 4, left: 50, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 42, bottom: 8 },
+  xAxis: { type: "category", data: D.dates, axisLine: { lineStyle: { color: "#21262d" } }, axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 }, axisTick: { show: false }, splitLine: { show: false } },
+  yAxis: { type: "value", name: "价格", nameTextStyle: { color: "#484f58", fontSize: 11 }, scale: true, splitLine: { lineStyle: { color: "#21262d", type: "dashed" } }, axisLabel: { color: "#484f58", fontSize: 11 }, axisLine: { show: false } },
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 0, bottom: 0 }
+  ],
+  series: [
+    { name: "K线", type: "candlestick", data: kl, itemStyle: { color: UP, color0: DOWN, borderColor: UP, borderColor0: DOWN, borderWidth: 1 } },
+    { name: "MA5", type: "line", data: D.ma5, symbol: "none", lineStyle: { width: 1.2, color: "#e67e22" } },
+    { name: "MA10", type: "line", data: D.ma10, symbol: "none", lineStyle: { width: 1.2, color: "#a29bfe" } },
+    { name: "MA20", type: "line", data: D.ma20, symbol: "none", lineStyle: { width: 1.5, color: "#1abc9c" } },
+    { name: "BB上轨", type: "line", data: D.bbUpper, symbol: "none", lineStyle: { width: 1, color: "#f39c12", type: "dashed" } },
+    { name: "BB下轨", type: "line", data: D.bbLower, symbol: "none", lineStyle: { width: 1, color: "#f39c12", type: "dashed" } },
+    { name: "BB中轨", type: "line", data: D.bbMid, symbol: "none", lineStyle: { width: 0.8, color: "#f39c12" } },
+    { name: "金叉", type: "scatter", data: D.gcMarkers, symbol: "triangle", symbolSize: 14, itemStyle: { color: "#e74c3c" }, z: 10, label: { show: true, position: "bottom", color: "#e74c3c", fontSize: 9, formatter: "金" } },
+    { name: "死叉", type: "scatter", data: D.dcMarkers, symbol: "triangle", symbolRotate: 180, symbolSize: 14, itemStyle: { color: "#2ecc71" }, z: 10, label: { show: true, position: "top", color: "#2ecc71", fontSize: 9, formatter: "死" } },
+    { name: "阻力", type: "line", data: [], markLine: { silent: true, symbol: "none", lineStyle: { color: "#e74c3c", type: "dashed", width: 1 }, label: { color: "#e74c3c", fontSize: 10 }, data: [ { yAxis: D.r20Hi, name: "阻 " + D.r20Hi }, { yAxis: D.allHi, name: "高 " + D.allHi } ] } },
+    { name: "支撑", type: "line", data: [], markLine: { silent: true, symbol: "none", lineStyle: { color: "#2ecc71", type: "dashed", width: 1 }, label: { color: "#2ecc71", fontSize: 10 }, data: [ { yAxis: D.r20Lo, name: "支 " + D.r20Lo }, { yAxis: D.allLo, name: "低 " + D.allLo } ] } }
+  ]
+});
+
+// ── Volume Chart ──
+var vch = echarts.init(document.getElementById("vol-chart"));
+vch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: { trigger: "axis", backgroundColor: "rgba(13,17,23,0.96)", borderColor: "#21262d", textStyle: { color: "#c9d1d9", fontSize: 12 }, formatter: function(ps) { var i = ps[0].dataIndex; return D.dates[i] + "<br>成交量 <b>" + D.vols[i].toFixed(2) + "</b> 万手"; } },
+  grid: { left: "7%", right: "3%", top: 6, bottom: 22 },
+  xAxis: { type: "category", data: D.dates, axisLabel: { show: false }, axisLine: { lineStyle: { color: "#21262d" } }, axisTick: { show: false }, splitLine: { show: false } },
+  yAxis: { type: "value", name: "万手", nameTextStyle: { color: "#484f58", fontSize: 11 }, splitLine: { lineStyle: { color: "#21262d", type: "dashed" } }, axisLabel: { color: "#484f58", fontSize: 10 }, axisLine: { show: false } },
+  dataZoom: [ { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 }, { type: "slider", start: ZS, end: ZE, height: 18, bottom: 2 } ],
+  series: [ { type: "bar", data: D.vols.map(function(v, i) { return { value: v, itemStyle: { color: D.pcts[i] >= 0 ? "rgba(231,76,60,0.65)" : "rgba(46,204,113,0.65)" } }; }), barWidth: "60%" } ]
+});
+
+// ── MACD Chart ──
+var mch = echarts.init(document.getElementById("macd-chart"));
+mch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: { trigger: "axis", backgroundColor: "rgba(13,17,23,0.96)", borderColor: "#21262d", textStyle: { color: "#c9d1d9", fontSize: 12 }, formatter: function(ps) { var i = ps[0].dataIndex; if (D.dif[i] == null) return ""; return D.dates[i] + "<br>DIF <b style='color:#e67e22'>" + D.dif[i].toFixed(2) + "</b> DEA <b style='color:#3498db'>" + D.dea[i].toFixed(2) + "</b><br>MACD <b style='color:" + (D.macdHist[i] >= 0 ? "#e74c3c" : "#2ecc71") + "'>" + D.macdHist[i].toFixed(2) + "</b>"; } },
+  legend: { data: ["MACD柱", "DIF", "DEA"], top: 4, left: 50, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 36, bottom: 24 },
+  xAxis: { type: "category", data: D.dates, axisLine: { lineStyle: { color: "#21262d" } }, axisLabel: { color: "#484f58", fontSize: 9, formatter: function(v) { return v.substring(5); }, rotate: 45 }, axisTick: { show: false }, splitLine: { show: false } },
+  yAxis: { type: "value", name: "MACD", nameTextStyle: { color: "#484f58", fontSize: 11 }, splitLine: { lineStyle: { color: "#21262d", type: "dashed" } }, axisLabel: { color: "#484f58", fontSize: 10 }, axisLine: { show: false } },
+  dataZoom: [ { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 }, { type: "slider", start: ZS, end: ZE, height: 18, bottom: 2 } ],
+  series: [
+    { name: "MACD柱", type: "bar", data: D.macdHist.map(function(v) { if (v == null) return 0; return { value: v, itemStyle: { color: v >= 0 ? "rgba(231,76,60,0.6)" : "rgba(46,204,113,0.6)" } }; }), barWidth: "60%" },
+    { name: "DIF", type: "line", data: D.dif, symbol: "none", lineStyle: { width: 1.2, color: "#e67e22" } },
+    { name: "DEA", type: "line", data: D.dea, symbol: "none", lineStyle: { width: 1.2, color: "#3498db" } }
+  ]
+});
+
+// Sync zoom
+kch.group = "sync";
+vch.group = "sync";
+mch.group = "sync";
+echarts.connect("sync");
+
+// Responsive
+window.addEventListener("resize", function() { kch.resize(); vch.resize(); mch.resize(); });
+</script>
+</body>
+</html>
