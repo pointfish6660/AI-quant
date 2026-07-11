@@ -17,6 +17,7 @@
 | task6 | `task6-CYPC/` | 长江电力 600900.SH | 计划中 | 纯 A股，水电蓝筹，分红标的，spec 已就绪：`specs/cypc.yaml` |
 | task7 | `task7-env-intro/` | — | 已完成 | Python 量化环境配置 + 工具指南 HTML（GitHub Pages 部署） |
 | task8 | `task8-GigaDevice/` | 兆易创新 603986.SH | 进行中 | 纯 A股科创板，双均线(MA5/MA15)策略回测看板，spec 已就绪：`specs/gdpy.yaml`，skill：`dual-ma-backtest` |
+| task9 | `task9-Midea/` | 美的集团 000333.SZ | 进行中 | 纯 A股主板，双均线(MA5/MA15)策略回测看板，spec 已就绪：`specs/midea.yaml`，复用 skill：`dual-ma-backtest` |
 
 ---
 
@@ -65,4 +66,4 @@ Spec 固化了标的元信息、数据源、字段映射、输出格式、质量
 
 ---
 
-*最后更新: 2026-07-11*
+*最后更新: 2026-07-12*

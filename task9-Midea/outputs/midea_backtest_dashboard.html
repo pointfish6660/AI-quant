@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美的集团 (000333.SZ) 双均线策略回测看板</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#0d1117;color:#c9d1d9;}
+.header{background:linear-gradient(135deg,#161b22,#0d1117);border-bottom:1px solid #21262d;padding:20px 32px 14px;text-align:center;}
+.header h1{font-size:26px;font-weight:700;margin-bottom:6px;background:linear-gradient(90deg,#e74c3c,#f39c12);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header .subtitle{font-size:13px;color:#6e7681;}
+.header .params{font-size:12px;color:#8b949e;margin-top:4px;}
+.metric-section{max-width:1400px;margin:14px auto;padding:0 16px;}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.metric-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 18px;text-align:center;}
+.metric-card .mc-title{font-size:12px;color:#6e7681;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.metric-card .mc-strategy{font-size:22px;font-weight:700;margin-bottom:2px;}
+.metric-card .mc-benchmark{font-size:13px;color:#6e7681;}
+.metric-card .mc-label{font-size:10px;color:#484f58;margin-top:2px;}
+.signal-stats{max-width:1400px;margin:12px auto;padding:0 16px;}
+.signal-stats-bar{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;padding:10px 24px;background:#161b22;border:1px solid #21262d;border-radius:8px;}
+.ss-item{text-align:center;}
+.ss-val{font-size:18px;font-weight:700;margin-bottom:1px;}
+.ss-lbl{font-size:11px;color:#6e7681;}
+.container{max-width:1400px;margin:0 auto;padding:8px 16px;}
+.chart-box{background:#161b22;border-radius:8px;border:1px solid #21262d;padding:10px;margin-bottom:10px;}
+.chart-title{font-size:14px;font-weight:600;color:#f39c12;margin-bottom:6px;padding-left:4px;}
+#price-chart{width:100%;height:420px;}
+#equity-chart{width:100%;height:320px;}
+#drawdown-chart{width:100%;height:220px;}
+.trades-section{max-width:1400px;margin:14px auto;padding:0 16px;}
+.trades-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:16px 20px;}
+.trades-card h3{font-size:16px;color:#f39c12;margin-bottom:10px;}
+.trades-table{width:100%;border-collapse:collapse;font-size:13px;}
+.trades-table th{text-align:left;padding:8px 12px;color:#6e7681;font-size:11px;border-bottom:1px solid #21262d;text-transform:uppercase;letter-spacing:0.5px;}
+.trades-table td{padding:8px 12px;border-bottom:1px solid #1a1f29;}
+.trades-table tr:hover{background:#1a1f29;}
+.buy-tag{color:#e74c3c;font-weight:600;}
+.sell-tag{color:#2ecc71;font-weight:600;}
+.footer{text-align:center;padding:16px;color:#484f58;font-size:11px;border-top:1px solid #21262d;margin-top:8px;line-height:1.8;}
+.up{color:#e74c3c;}.down{color:#2ecc71;}.neutral{color:#f39c12;}
+@media(max-width:768px){
+  .metric-grid{grid-template-columns:repeat(2,1fr);}
+  .header h1{font-size:18px;}
+  #price-chart{height:320px;}#equity-chart{height:240px;}#drawdown-chart{height:180px;}
+  .signal-stats-bar{gap:10px;}.ss-val{font-size:14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>美的集团 &nbsp;000333.SZ</h1>
+  <div class="subtitle">双均线策略回测看板 &nbsp;|&nbsp; MA5 / MA15 &nbsp;|&nbsp; 2025-07-01 ~ 2026-07-10 &nbsp;|&nbsp; 250 交易日</div>
+  <div class="params">初始资金: ¥100000 &nbsp;|&nbsp; 佣金万2.5双边 + 印花税卖出千1 + 滑点单边千2</div>
+</div>
+
+<div class="metric-section">
+  <div class="metric-grid">
+    <div class="metric-card">
+      <div class="mc-title">累计回报</div>
+      <div class="mc-strategy" id="m-cum-return">--</div>
+      <div class="mc-benchmark" id="m-bench-cum">基准: --</div>
+      <div class="mc-label">策略 vs 买入持有</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">最大回撤</div>
+      <div class="mc-strategy" id="m-max-dd">--</div>
+      <div class="mc-benchmark" id="m-bench-dd">基准: --</div>
+      <div class="mc-label">峰值到谷值</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">夏普比率</div>
+      <div class="mc-strategy" id="m-sharpe">--</div>
+      <div class="mc-benchmark" id="m-bench-sharpe">基准: --</div>
+      <div class="mc-label">年化 rf=3%</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">胜率 / 盈亏比</div>
+      <div class="mc-strategy" id="m-win-rate">--</div>
+      <div class="mc-benchmark" id="m-pl-ratio">盈亏比: --</div>
+      <div class="mc-label" id="m-trades">-- 轮交易</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">年化收益</div>
+      <div class="mc-strategy" id="m-ann-return">--</div>
+      <div class="mc-benchmark" id="m-bench-ann">基准: --</div>
+      <div class="mc-label">252交易日年化</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">总交易成本</div>
+      <div class="mc-strategy" id="m-total-cost">--</div>
+      <div class="mc-benchmark">&nbsp;</div>
+      <div class="mc-label">佣金+印花税+滑点</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">期末权益</div>
+      <div class="mc-strategy" id="m-final-equity">--</div>
+      <div class="mc-benchmark" id="m-bench-final">基准: --</div>
+      <div class="mc-label">初始 ¥100000</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">超额收益</div>
+      <div class="mc-strategy" id="m-alpha">--</div>
+      <div class="mc-benchmark">策略 - 基准</div>
+      <div class="mc-label">期末绝对差额</div>
+    </div>
+  </div>
+</div>
+
+<div class="signal-stats">
+  <div class="signal-stats-bar">
+    <div class="ss-item"><div class="ss-val up" id="ss-gc">--</div><div class="ss-lbl">金叉次数</div></div>
+    <div class="ss-item"><div class="ss-val down" id="ss-dc">--</div><div class="ss-lbl">死叉次数</div></div>
+    <div class="ss-item"><div class="ss-val neutral" id="ss-freq">--</div><div class="ss-lbl">每月信号数</div></div>
+    <div class="ss-item"><div class="ss-val neutral" id="ss-hold">--</div><div class="ss-lbl">平均持仓天数</div></div>
+    <div class="ss-item"><div class="ss-val" id="ss-complete">--</div><div class="ss-lbl">完整交易轮数</div></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="chart-box">
+    <div class="chart-title">股价走势 + MA5/MA15 + 买卖信号</div>
+    <div id="price-chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">权益曲线 (策略 vs 基准) + 超额收益</div>
+    <div id="equity-chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">回撤曲线 (策略 vs 基准)</div>
+    <div id="drawdown-chart"></div>
+  </div>
+</div>
+
+<div class="trades-section">
+  <div class="trades-card">
+    <h3>交易记录</h3>
+    <table class="trades-table">
+      <thead>
+        <tr><th>序号</th><th>日期</th><th>类型</th><th>成交价</th><th>股数</th><th>交易成本</th><th>原因</th></tr>
+      </thead>
+      <tbody id="trades-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  策略说明: MA5/MA15 双均线交叉，金叉买入(open价)、死叉卖出(open价)，含交易成本<br>
+  信号逻辑: signal=1/-1(状态) → position=signal.diff()(交叉捕捉, ±2) → exec_signal=signal.shift(1)(避免未来函数)<br>
+  数据来源: 腾讯行情 &nbsp;|&nbsp; 生成: 2026-07-10 &nbsp;|&nbsp; 仅供学习研究，不构成投资建议
+</div>
+
+<script>
+// ── All data in one JSON blob ──
+var D = {"stockName": "美的集团", "stockCode": "000333.SZ", "dateFrom": "2025-07-01", "dateTo": "2026-07-10", "nDays": 250, "shortPeriod": 5, "longPeriod": 15, "initialCapital": 100000.0, "dates": ["2025-07-01", "2025-07-02", "2025-07-03", "2025-07-04", "2025-07-07", "2025-07-08", "2025-07-09", "2025-07-10", "2025-07-11", "2025-07-14", "2025-07-15", "2025-07-16", "2025-07-17", "2025-07-18", "2025-07-21", "2025-07-22", "2025-07-23", "2025-07-24", "2025-07-25", "2025-07-28", "2025-07-29", "2025-07-30", "2025-07-31", "2025-08-01", "2025-08-04", "2025-08-05", "2025-08-06", "2025-08-07", "2025-08-08", "2025-08-11", "2025-08-12", "2025-08-13", "2025-08-14", "2025-08-15", "2025-08-18", "2025-08-19", "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-25", "2025-08-26", "2025-08-27", "2025-08-28", "2025-08-29", "2025-09-01", "2025-09-02", "2025-09-03", "2025-09-04", "2025-09-05", "2025-09-08", "2025-09-09", "2025-09-10", "2025-09-11", "2025-09-12", "2025-09-15", "2025-09-16", "2025-09-17", "2025-09-18", "2025-09-19", "2025-09-22", "2025-09-23", "2025-09-24", "2025-09-25", "2025-09-26", "2025-09-29", "2025-09-30", "2025-10-09", "2025-10-10", "2025-10-13", "2025-10-14", "2025-10-15", "2025-10-16", "2025-10-17", "2025-10-20", "2025-10-21", "2025-10-22", "2025-10-23", "2025-10-24", "2025-10-27", "2025-10-28", "2025-10-29", "2025-10-30", "2025-10-31", "2025-11-03", "2025-11-04", "2025-11-05", "2025-11-06", "2025-11-07", "2025-11-10", "2025-11-11", "2025-11-12", "2025-11-13", "2025-11-14", "2025-11-17", "2025-11-18", "2025-11-19", "2025-11-20", "2025-11-21", "2025-11-24", "2025-11-25", "2025-11-26", "2025-11-27", "2025-11-28", "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-04", "2025-12-05", "2025-12-08", "2025-12-09", "2025-12-10", "2025-12-11", "2025-12-12", "2025-12-15", "2025-12-16", "2025-12-17", "2025-12-18", "2025-12-19", "2025-12-22", "2025-12-23", "2025-12-24", "2025-12-25", "2025-12-26", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05", "2026-03-06", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-20", "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26", "2026-03-27", "2026-03-30", "2026-03-31", "2026-04-01", "2026-04-02", "2026-04-03", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-13", "2026-04-14", "2026-04-15", "2026-04-16", "2026-04-17", "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23", "2026-04-24", "2026-04-27", "2026-04-28", "2026-04-29", "2026-04-30", "2026-05-06", "2026-05-07", "2026-05-08", "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15", "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21", "2026-05-22", "2026-05-25", "2026-05-26", "2026-05-27", "2026-05-28", "2026-05-29", "2026-06-01", "2026-06-02", "2026-06-03", "2026-06-04", "2026-06-05", "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11", "2026-06-12", "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18", "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25", "2026-06-26", "2026-06-29", "2026-06-30", "2026-07-01", "2026-07-02", "2026-07-03", "2026-07-06", "2026-07-07", "2026-07-08", "2026-07-09", "2026-07-10"], "close": [67.9, 68.29, 68.68, 69.27, 68.34, 68.01, 67.59, 67.47, 68.27, 68.89, 69.0, 68.68, 68.42, 68.62, 68.34, 68.98, 69.29, 69.3, 68.55, 67.73, 67.03, 67.9, 65.98, 66.58, 66.73, 67.17, 67.49, 67.27, 67.37, 67.55, 67.72, 67.61, 68.12, 68.09, 67.63, 68.47, 68.01, 67.71, 67.88, 69.31, 69.59, 68.5, 69.29, 69.5, 69.82, 71.95, 71.41, 71.38, 72.01, 72.82, 72.97, 72.81, 72.81, 71.36, 70.96, 70.25, 70.14, 69.53, 70.14, 69.05, 69.32, 69.89, 68.63, 69.99, 69.52, 68.45, 68.42, 68.62, 67.6, 68.39, 68.71, 68.97, 68.59, 68.66, 68.7, 69.67, 70.68, 70.4, 70.67, 70.2, 70.19, 71.09, 72.19, 71.18, 70.95, 71.73, 72.82, 71.99, 73.12, 73.02, 75.28, 75.39, 75.02, 74.21, 73.68, 73.68, 74.22, 75.03, 74.84, 74.98, 76.08, 76.08, 76.14, 76.28, 77.84, 78.45, 78.17, 78.51, 78.09, 76.48, 76.35, 75.58, 75.6, 76.69, 76.24, 76.75, 76.11, 75.73, 75.44, 75.93, 75.08, 74.87, 75.15, 74.69, 75.13, 74.43, 74.96, 75.12, 75.65, 75.31, 76.05, 74.9, 72.48, 73.43, 73.5, 73.59, 73.9, 75.28, 74.06, 73.77, 73.06, 72.63, 72.38, 71.62, 74.16, 73.87, 74.13, 74.19, 76.09, 76.73, 75.82, 75.44, 76.47, 75.97, 76.08, 75.33, 75.8, 75.98, 75.53, 74.92, 73.73, 72.84, 72.44, 72.55, 72.8, 71.69, 72.88, 73.67, 73.68, 73.14, 72.92, 72.88, 73.34, 72.28, 71.4, 69.65, 70.51, 71.08, 70.6, 71.06, 68.38, 72.63, 73.12, 73.65, 72.63, 72.4, 73.01, 72.8, 72.69, 72.06, 72.83, 73.77, 74.18, 74.93, 75.86, 75.78, 75.58, 76.13, 75.94, 75.78, 76.73, 77.59, 77.38, 76.72, 76.09, 76.68, 76.95, 76.37, 76.66, 78.09, 78.85, 79.11, 77.28, 77.78, 77.78, 76.56, 76.09, 75.83, 76.31, 75.23, 77.13, 77.98, 78.88, 78.89, 78.7, 77.97, 79.13, 78.64, 80.18, 81.63, 79.51, 77.21, 75.24, 75.5, 74.28, 74.56, 74.35, 72.91, 72.78, 74.83, 77.27, 75.53, 77.4, 77.01, 77.96, 80.0, 79.12, 79.41, 79.33, 78.99], "ma5": [null, null, null, null, 68.49, 68.52, 68.38, 68.13, 67.93, 68.04, 68.24, 68.46, 68.65, 68.72, 68.61, 68.61, 68.73, 68.9, 68.89, 68.77, 68.38, 68.1, 67.44, 67.04, 66.84, 66.87, 66.79, 67.05, 67.2, 67.37, 67.48, 67.5, 67.67, 67.82, 67.83, 67.98, 68.06, 67.98, 67.94, 68.27, 68.5, 68.6, 68.91, 69.24, 69.34, 69.81, 70.39, 70.81, 71.31, 71.91, 72.12, 72.4, 72.68, 72.55, 72.18, 71.64, 71.1, 70.45, 70.2, 69.82, 69.63, 69.58, 69.4, 69.37, 69.47, 69.29, 69.0, 69.0, 68.52, 68.29, 68.35, 68.46, 68.45, 68.66, 68.72, 68.92, 69.26, 69.62, 70.02, 70.32, 70.43, 70.51, 70.87, 70.97, 71.12, 71.43, 71.77, 71.73, 72.12, 72.53, 73.24, 73.76, 74.36, 74.58, 74.71, 74.39, 74.16, 74.16, 74.29, 74.55, 75.03, 75.4, 75.62, 75.91, 76.48, 76.96, 77.37, 77.85, 78.21, 77.94, 77.52, 77.0, 76.42, 76.14, 76.09, 76.17, 76.28, 76.3, 76.05, 75.99, 75.66, 75.41, 75.29, 75.14, 74.98, 74.85, 74.87, 74.86, 75.06, 75.09, 75.42, 75.4, 74.88, 74.43, 74.07, 73.58, 73.38, 73.94, 74.06, 74.12, 74.01, 73.76, 73.18, 72.69, 72.77, 72.93, 73.23, 73.59, 74.49, 75.0, 75.39, 75.65, 76.11, 76.08, 75.95, 75.86, 75.93, 75.83, 75.74, 75.51, 75.19, 74.6, 73.89, 73.29, 72.87, 72.46, 72.47, 72.72, 72.94, 73.01, 73.26, 73.26, 73.19, 72.91, 72.56, 71.91, 71.43, 70.98, 70.65, 70.58, 70.32, 70.75, 71.16, 71.77, 72.08, 72.88, 72.96, 72.9, 72.7, 72.59, 72.68, 72.83, 73.1, 73.55, 74.31, 74.9, 75.26, 75.65, 75.86, 75.84, 76.03, 76.43, 76.68, 76.84, 76.9, 76.89, 76.76, 76.56, 76.55, 76.95, 77.38, 77.81, 78.0, 78.22, 78.16, 77.7, 77.1, 76.81, 76.51, 76.0, 76.12, 76.49, 77.1, 77.62, 78.31, 78.48, 78.71, 78.66, 78.92, 79.51, 79.82, 79.43, 78.75, 77.82, 76.35, 75.36, 74.78, 74.32, 73.77, 73.88, 74.43, 74.66, 75.56, 76.41, 77.03, 77.58, 78.3, 78.7, 79.16, 79.37], "ma15": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 68.38, 68.45, 68.52, 68.56, 68.51, 68.47, 68.41, 68.43, 68.33, 68.22, 68.07, 67.95, 67.87, 67.8, 67.71, 67.66, 67.58, 67.46, 67.38, 67.35, 67.35, 67.44, 67.45, 67.57, 67.65, 67.82, 67.99, 68.05, 68.19, 68.33, 68.48, 68.76, 69.02, 69.23, 69.5, 69.84, 70.14, 70.46, 70.8, 71.03, 71.14, 71.19, 71.3, 71.31, 71.36, 71.3, 71.13, 71.03, 70.84, 70.71, 70.49, 70.19, 69.9, 69.62, 69.37, 69.19, 69.09, 69.01, 68.95, 68.85, 68.83, 68.85, 68.9, 69.02, 69.07, 69.11, 69.23, 69.41, 69.65, 69.88, 70.05, 70.26, 70.51, 70.74, 71.04, 71.32, 71.7, 72.01, 72.32, 72.56, 72.79, 73.02, 73.23, 73.42, 73.66, 73.93, 74.22, 74.44, 74.72, 74.93, 75.25, 75.46, 75.64, 75.88, 76.14, 76.32, 76.5, 76.59, 76.63, 76.75, 76.84, 76.88, 76.88, 76.86, 76.8, 76.67, 76.45, 76.23, 76.0, 75.78, 75.69, 75.56, 75.52, 75.49, 75.42, 75.35, 75.31, 75.23, 75.01, 74.88, 74.71, 74.62, 74.55, 74.56, 74.52, 74.43, 74.34, 74.18, 74.0, 73.73, 73.65, 73.51, 73.46, 73.57, 73.75, 73.96, 74.11, 74.21, 74.29, 74.42, 74.57, 74.73, 74.94, 75.18, 75.44, 75.49, 75.48, 75.39, 75.28, 75.04, 74.78, 74.5, 74.33, 74.15, 73.99, 73.8, 73.64, 73.44, 73.27, 73.05, 72.81, 72.54, 72.39, 72.3, 72.17, 72.05, 71.83, 71.81, 71.78, 71.77, 71.74, 71.71, 71.71, 71.68, 71.71, 71.75, 71.96, 72.18, 72.39, 72.67, 72.99, 73.49, 73.68, 73.88, 74.04, 74.25, 74.54, 74.84, 75.15, 75.42, 75.68, 75.94, 76.15, 76.3, 76.41, 76.56, 76.77, 77.0, 77.08, 77.2, 77.34, 77.32, 77.22, 77.12, 77.09, 77.04, 77.07, 77.13, 77.3, 77.45, 77.49, 77.43, 77.43, 77.52, 77.68, 77.94, 78.14, 78.21, 78.17, 78.12, 78.06, 77.88, 77.64, 77.24, 76.84, 76.58, 76.53, 76.29, 76.21, 76.0, 75.75, 75.79, 75.91, 76.19, 76.45, 76.76], "buyMarkers": [[15, 68.37], [32, 67.59], [76, 69.59], [131, 76.06], [148, 74.38], [185, 72.63], [224, 78.33], [244, 77.5]], "sellMarkers": [[21, 67.28], [57, 70.39], [113, 75.97], [133, 72.48], [161, 73.74], [217, 76.08], [234, 75.51]], "strategyEquity": [100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100000.0, 100665.22, 101117.63, 101132.22, 100037.69, 98841.0, 97819.43, 97865.18, 97865.18, 97865.18, 97865.18, 97865.18, 97865.18, 97865.18, 97865.18, 97865.18, 97865.18, 97865.18, 98410.67, 98367.33, 97702.77, 98916.32, 98251.76, 97818.34, 98063.94, 100129.88, 100534.4, 98959.66, 100100.98, 100404.37, 100866.68, 103943.91, 103163.77, 103120.42, 104030.59, 105200.81, 105417.51, 105186.36, 105186.36, 103091.53, 102513.65, 101487.9, 101328.99, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 101359.67, 102715.7, 102308.78, 102701.17, 102018.12, 102003.59, 103311.55, 104910.17, 103442.34, 103108.09, 104241.65, 105825.74, 104619.51, 106261.73, 106116.4, 109400.84, 109560.7, 109022.98, 107845.82, 107075.57, 107075.57, 107860.35, 109037.51, 108761.39, 108964.85, 110563.47, 110563.47, 110650.67, 110854.13, 113121.26, 114007.77, 113600.85, 114094.97, 113484.58, 111144.79, 110955.86, 109836.82, 109865.89, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 110044.8, 108122.62, 104629.11, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 104289.07, 106446.7, 107342.06, 106068.97, 105537.35, 106978.32, 106278.82, 106432.71, 105383.46, 106040.99, 106292.81, 105663.26, 104809.88, 103145.07, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102823.79, 102267.55, 103129.22, 102832.58, 102677.2, 101787.27, 102874.96, 104202.78, 104781.93, 105841.36, 107155.06, 107042.05, 106759.53, 107536.45, 107268.06, 107042.05, 108384.0, 109598.81, 109302.17, 108369.87, 107479.95, 108313.37, 108694.76, 107875.47, 108285.12, 110305.1, 111378.65, 111745.92, 109160.91, 109867.2, 109867.2, 108143.86, 107479.95, 107116.56, 107116.56, 107116.56, 107116.56, 107116.56, 107116.56, 107116.56, 107380.4, 106384.34, 107967.12, 107298.53, 109399.8, 111378.27, 108485.61, 105347.35, 102659.36, 103014.12, 102692.92, 102692.92, 102692.92, 102692.92, 102692.92, 102692.92, 102692.92, 102692.92, 102692.92, 102692.92, 103070.03, 105767.09, 104603.65, 104987.05, 104881.29, 104431.78], "benchmarkEquity": [99775.0, 100348.1, 100921.2, 101788.19, 100421.57, 99936.64, 99319.46, 99143.12, 100318.71, 101229.79, 101391.43, 100921.2, 100539.13, 100833.03, 100421.57, 101362.04, 101817.58, 101832.28, 100730.16, 99525.19, 98496.55, 99775.0, 96953.59, 97835.28, 98055.7, 98702.28, 99172.51, 98849.23, 98996.17, 99260.68, 99510.49, 99348.85, 100098.29, 100054.2, 99378.24, 100612.61, 99936.64, 99495.8, 99745.61, 101846.97, 102258.43, 100656.69, 101817.58, 102126.17, 102596.41, 105726.41, 104932.89, 104888.8, 105814.58, 107004.86, 107225.28, 106990.16, 106990.16, 104859.41, 104271.62, 103228.29, 103066.64, 102170.26, 103066.64, 101464.91, 101861.67, 102699.27, 100847.72, 102846.22, 102155.56, 100583.22, 100539.13, 100833.03, 99334.15, 100495.05, 100965.28, 101347.35, 100788.94, 100891.81, 100950.59, 102375.99, 103860.16, 103448.71, 103845.47, 103154.81, 103140.12, 104462.65, 106079.08, 104594.91, 104256.93, 105403.12, 107004.86, 105785.19, 107445.7, 107298.76, 110619.79, 110781.43, 110237.72, 109047.44, 108268.62, 108268.62, 109062.14, 110252.42, 109973.22, 110178.94, 111795.38, 111795.38, 111883.55, 112089.27, 114381.67, 115278.05, 114866.6, 115366.22, 114749.04, 112383.17, 112192.14, 111060.63, 111090.02, 112691.76, 112030.49, 112779.93, 111839.46, 111281.06, 110854.91, 111574.95, 110325.89, 110017.3, 110428.76, 109752.79, 110399.37, 109370.73, 110149.55, 110384.67, 111163.5, 110663.87, 111751.29, 110061.39, 106505.24, 107901.24, 108004.11, 108136.36, 108591.9, 110619.79, 108827.02, 108400.87, 107357.54, 106725.66, 106358.29, 105241.48, 108973.97, 108547.82, 108929.88, 109018.05, 111810.07, 112750.54, 111413.31, 110854.91, 112368.47, 111633.73, 111795.38, 110693.26, 111383.92, 111648.43, 110987.16, 110090.78, 108342.09, 107034.25, 106446.46, 106608.1, 106975.47, 105344.34, 107093.03, 108253.92, 108268.62, 107475.09, 107151.81, 107093.03, 107768.99, 106211.34, 104918.19, 102346.6, 103610.35, 104447.96, 103742.61, 104418.57, 100480.35, 106725.66, 107445.7, 108224.53, 106725.66, 106387.68, 107284.06, 106975.47, 106813.83, 105888.05, 107019.55, 108400.87, 109003.36, 110105.47, 111472.09, 111354.53, 111060.63, 111868.85, 111589.65, 111354.53, 112750.54, 114014.3, 113705.7, 112735.85, 111810.07, 112677.07, 113073.83, 112221.53, 112647.68, 114749.04, 115865.85, 116247.91, 113558.76, 114293.5, 114293.5, 112500.73, 111810.07, 111428.01, 112133.36, 110546.32, 113338.33, 114587.4, 115909.93, 115924.63, 115645.42, 114572.7, 116277.3, 115557.25, 117820.26, 119951.01, 116835.71, 113455.89, 110561.01, 110943.08, 109150.31, 109561.76, 109253.17, 107137.11, 106946.08, 109958.52, 113547.0, 110990.1, 113738.03, 113164.93, 114560.94, 117558.69, 116265.55, 116691.7, 116574.14, 116074.51], "alpha": [225.0, -348.1, -921.2, -1788.19, -421.57, 63.36, 680.54, 856.88, -318.71, -1229.79, -1391.43, -921.2, -539.13, -833.03, -421.57, -696.82, -699.95, -700.05, -692.48, -684.19, -677.12, -1909.82, 911.58, 29.89, -190.53, -837.1, -1307.34, -984.05, -1131.0, -1395.51, -1645.32, -1483.67, -1687.61, -1686.87, -1675.47, -1696.28, -1684.89, -1677.45, -1681.67, -1717.09, -1724.03, -1697.03, -1716.6, -1721.8, -1729.73, -1782.5, -1769.12, -1768.38, -1783.99, -1804.05, -1807.77, -1803.81, -1803.81, -1767.88, -1757.97, -1740.38, -1737.66, -810.59, -1706.97, -105.24, -502.0, -1339.6, 511.95, -1486.55, -795.89, 776.45, 820.54, 526.64, 2025.52, 864.62, 394.39, 12.32, 570.73, 467.86, 409.08, -1016.32, -1144.47, -1139.93, -1144.3, -1136.69, -1136.53, -1151.11, -1168.92, -1152.56, -1148.84, -1161.47, -1179.12, -1165.68, -1183.98, -1182.36, -1218.95, -1220.73, -1214.74, -1201.63, -1193.04, -1193.04, -1201.79, -1214.9, -1211.83, -1214.1, -1231.91, -1231.91, -1232.88, -1235.15, -1260.41, -1270.28, -1265.75, -1271.26, -1264.45, -1238.38, -1236.28, -1223.81, -1224.13, -2646.97, -1985.7, -2735.13, -1794.67, -1236.26, -810.11, -1530.16, -281.1, 27.49, -383.96, 292.0, -354.57, 674.07, -104.76, -339.88, -1118.7, -619.08, -1706.5, -1938.76, -1876.12, -3612.18, -3715.04, -3847.29, -4302.83, -6330.72, -4537.95, -4111.8, -3068.47, -2436.59, -2069.22, -952.41, -4684.9, -4258.75, -4640.81, -4728.98, -5363.37, -5408.49, -5344.34, -5317.55, -5390.16, -5354.91, -5362.67, -5309.8, -5342.93, -5355.62, -5323.9, -5280.9, -5197.02, -4210.45, -3622.66, -3784.3, -4151.68, -2520.55, -4269.23, -5430.13, -5444.82, -4651.3, -4328.01, -4269.23, -4945.2, -3387.54, -2094.4, 477.2, -786.56, -1624.16, -918.81, -1594.77, 2343.44, -3901.86, -4621.91, -5400.74, -3901.86, -4120.13, -4154.84, -4142.89, -4136.63, -4100.78, -4144.6, -4198.09, -4221.43, -4264.11, -4317.03, -4312.48, -4301.1, -4332.4, -4321.59, -4312.48, -4366.55, -4415.49, -4403.54, -4365.98, -4330.12, -4363.7, -4379.07, -4346.06, -4362.56, -4443.94, -4487.19, -4501.99, -4397.85, -4426.3, -4426.3, -4356.87, -4330.12, -4311.45, -5016.8, -3429.76, -6221.78, -7470.84, -8793.37, -8808.07, -8265.03, -8188.36, -8310.19, -8258.73, -8420.46, -8572.74, -8350.09, -8108.54, -7901.65, -7928.96, -6457.38, -6868.84, -6560.25, -4444.19, -4253.16, -7265.6, -10854.08, -8297.18, -11045.11, -10472.01, -11490.92, -11791.6, -11661.9, -11704.64, -11692.85, -11642.74], "strategyDrawdown": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.08, -2.27, -3.28, -3.23, -3.23, -3.23, -3.23, -3.23, -3.23, -3.23, -3.23, -3.23, -3.23, -3.23, -2.69, -2.73, -3.39, -2.19, -2.85, -3.28, -3.03, -0.99, -0.59, -2.15, -1.02, -0.72, -0.26, 0.0, -0.75, -0.79, 0.0, 0.0, 0.0, -0.22, -0.22, -2.21, -2.75, -3.73, -3.88, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -3.85, -2.56, -2.95, -2.58, -3.22, -3.24, -2.0, -0.48, -1.87, -2.19, -1.12, 0.0, -1.14, 0.0, -0.14, 0.0, 0.0, -0.49, -1.57, -2.27, -2.27, -1.55, -0.48, -0.73, -0.54, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.36, 0.0, -0.53, -2.59, -2.75, -3.73, -3.71, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -3.55, -5.23, -8.3, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -8.59, -6.7, -5.92, -7.03, -7.5, -6.24, -6.85, -6.72, -7.64, -7.06, -6.84, -7.39, -8.14, -9.6, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -9.88, -10.37, -9.61, -9.87, -10.01, -10.79, -9.83, -8.67, -8.16, -7.23, -6.08, -6.18, -6.43, -5.75, -5.98, -6.18, -5.01, -3.94, -4.2, -5.02, -5.8, -5.07, -4.73, -5.45, -5.09, -3.32, -2.38, -2.06, -4.32, -3.71, -3.71, -5.22, -5.8, -6.12, -6.12, -6.12, -6.12, -6.12, -6.12, -6.12, -5.89, -6.76, -5.37, -5.96, -4.12, -2.38, -4.92, -7.67, -10.02, -9.71, -9.99, -9.99, -9.99, -9.99, -9.99, -9.99, -9.99, -9.99, -9.99, -9.99, -9.66, -7.3, -8.32, -7.98, -8.08, -8.47], "benchmarkDrawdown": [0.0, 0.0, 0.0, 0.0, -1.34, -1.82, -2.43, -2.6, -1.44, -0.55, -0.39, -0.85, -1.23, -0.94, -1.34, -0.42, 0.0, 0.0, -1.08, -2.27, -3.28, -2.02, -4.79, -3.93, -3.71, -3.07, -2.61, -2.93, -2.79, -2.53, -2.28, -2.44, -1.7, -1.75, -2.41, -1.2, -1.86, -2.29, -2.05, 0.0, 0.0, -1.57, -0.43, -0.13, 0.0, 0.0, -0.75, -0.79, 0.0, 0.0, 0.0, -0.22, -0.22, -2.21, -2.75, -3.73, -3.88, -4.71, -3.88, -5.37, -5.0, -4.22, -5.95, -4.08, -4.73, -6.19, -6.24, -5.96, -7.36, -6.28, -5.84, -5.48, -6.0, -5.91, -5.85, -4.52, -3.14, -3.52, -3.15, -3.8, -3.81, -2.58, -1.07, -2.45, -2.77, -1.7, -0.21, -1.34, 0.0, -0.14, 0.0, 0.0, -0.49, -1.57, -2.27, -2.27, -1.55, -0.48, -0.73, -0.54, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.36, 0.0, -0.53, -2.59, -2.75, -3.73, -3.71, -2.32, -2.89, -2.24, -3.06, -3.54, -3.91, -3.29, -4.37, -4.64, -4.28, -4.87, -4.31, -5.2, -4.52, -4.32, -3.64, -4.08, -3.13, -4.6, -7.68, -6.47, -6.38, -6.27, -5.87, -4.11, -5.67, -6.04, -6.94, -7.49, -7.81, -8.78, -5.54, -5.91, -5.58, -5.5, -3.08, -2.27, -3.43, -3.91, -2.6, -3.24, -3.1, -4.05, -3.45, -3.22, -3.8, -4.57, -6.09, -7.22, -7.73, -7.59, -7.27, -8.69, -7.17, -6.16, -6.15, -6.84, -7.12, -7.17, -6.59, -7.94, -9.06, -11.29, -10.19, -9.46, -10.08, -9.49, -12.9, -7.49, -6.87, -6.19, -7.49, -7.78, -7.01, -7.27, -7.41, -8.22, -7.23, -6.04, -5.52, -4.56, -3.38, -3.48, -3.73, -3.03, -3.27, -3.48, -2.27, -1.17, -1.44, -2.28, -3.08, -2.33, -1.99, -2.73, -2.36, -0.53, 0.0, 0.0, -2.31, -1.68, -1.68, -3.22, -3.82, -4.15, -3.54, -4.9, -2.5, -1.43, -0.29, -0.28, -0.52, -1.44, 0.0, -0.62, 0.0, 0.0, -2.6, -5.41, -7.83, -7.51, -9.0, -8.66, -8.92, -10.68, -10.84, -8.33, -5.34, -7.47, -5.18, -5.66, -4.49, -1.99, -3.07, -2.72, -2.82, -3.23], "regime": ["trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "choppy", "choppy", "choppy", "choppy", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "choppy", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "choppy", "choppy", "choppy", "choppy", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "trend", "choppy", "choppy", "choppy", "choppy", "trend", "trend", "trend", "trend", "trend", "trend", "choppy", "trend", "trend", "trend", "trend", "trend", "trend"], "signalStats": {"golden_crosses": 8, "death_crosses": 7, "total_signals": 15, "signals_per_month": 1.3, "avg_hold_days": 17.9, "complete_trades": 7}, "metrics": {"cum_return": 4.43, "bench_cum_return": 16.07, "ann_return": 4.47, "bench_ann_return": 16.21, "max_drawdown": -10.79, "bench_max_drawdown": -12.9, "sharpe": 0.17, "bench_sharpe": 0.728, "win_rate": 42.9, "profit_loss_ratio": 2.24, "total_trades": 7, "total_cost": 4226.74, "n_days": 250, "final_equity": 104431.78, "bench_final_equity": 116074.51, "alpha_final": -11642.74}, "trades": [{"date": "20250722", "type": "buy", "price": 68.37, "shares": 1459.38, "cost": 225.0, "reason": "golden_cross"}, {"date": "20250730", "type": "sell", "price": 67.28, "shares": 1459.38, "cost": 319.1, "reason": "death_cross"}, {"date": "20250814", "type": "buy", "price": 67.59, "shares": 1444.71, "cost": 220.2, "reason": "golden_cross"}, {"date": "20250918", "type": "sell", "price": 70.39, "shares": 1444.71, "cost": 330.49, "reason": "death_cross"}, {"date": "20251023", "type": "buy", "price": 69.59, "shares": 1453.29, "cost": 228.06, "reason": "golden_cross"}, {"date": "20251215", "type": "sell", "price": 75.97, "shares": 1453.29, "cost": 358.81, "reason": "death_cross"}, {"date": "20260112", "type": "buy", "price": 76.06, "shares": 1443.6, "cost": 247.6, "reason": "golden_cross"}, {"date": "20260114", "type": "sell", "price": 72.48, "shares": 1443.6, "cost": 340.04, "reason": "death_cross"}, {"date": "20260204", "type": "buy", "price": 74.38, "shares": 1398.99, "cost": 234.65, "reason": "golden_cross"}, {"date": "20260303", "type": "sell", "price": 73.74, "shares": 1398.99, "cost": 335.27, "reason": "death_cross"}, {"date": "20260407", "type": "buy", "price": 72.63, "shares": 1412.57, "cost": 231.35, "reason": "golden_cross"}, {"date": "20260526", "type": "sell", "price": 76.08, "shares": 1412.57, "cost": 349.26, "reason": "death_cross"}, {"date": "20260604", "type": "buy", "price": 78.33, "shares": 1364.46, "cost": 241.01, "reason": "golden_cross"}, {"date": "20260618", "type": "sell", "price": 75.51, "shares": 1364.46, "cost": 334.84, "reason": "death_cross"}, {"date": "20260703", "type": "buy", "price": 77.5, "shares": 1322.09, "cost": 231.06, "reason": "golden_cross"}], "costParams": {"commission": 0.00025, "stampTax": 0.001, "slippage": 0.002}};
+
+var UP = "#e74c3c", DOWN = "#2ecc71", NEUTRAL = "#f39c12";
+var BLUE = "#3498db", PURPLE = "#a29bfe", TEAL = "#1abc9c";
+var ZS = 0, ZE = 100;
+
+// ── 填充指标卡片 ──
+function fmtPct(v) { return (v >= 0 ? "+" : "") + v.toFixed(2) + "%"; }
+function fmtMoney(v) { return "¥" + v.toLocaleString("zh-CN", {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+function colorVal(v) { return v >= 0 ? UP : DOWN; }
+
+var m = D.metrics;
+document.getElementById("m-cum-return").textContent = fmtPct(m.cum_return);
+document.getElementById("m-cum-return").style.color = colorVal(m.cum_return);
+document.getElementById("m-bench-cum").textContent = "基准: " + fmtPct(m.bench_cum_return);
+
+document.getElementById("m-max-dd").textContent = m.max_drawdown.toFixed(2) + "%";
+document.getElementById("m-max-dd").style.color = DOWN;
+document.getElementById("m-bench-dd").textContent = "基准: " + m.bench_max_drawdown.toFixed(2) + "%";
+
+document.getElementById("m-sharpe").textContent = m.sharpe.toFixed(3);
+document.getElementById("m-sharpe").style.color = m.sharpe >= 1 ? UP : (m.sharpe >= 0 ? NEUTRAL : DOWN);
+document.getElementById("m-bench-sharpe").textContent = "基准: " + m.bench_sharpe.toFixed(3);
+
+document.getElementById("m-win-rate").textContent = m.win_rate.toFixed(1) + "%";
+document.getElementById("m-win-rate").style.color = m.win_rate >= 50 ? UP : DOWN;
+document.getElementById("m-pl-ratio").textContent = "盈亏比: " + m.profit_loss_ratio.toFixed(2);
+document.getElementById("m-trades").textContent = m.total_trades + " 轮交易";
+
+document.getElementById("m-ann-return").textContent = fmtPct(m.ann_return);
+document.getElementById("m-ann-return").style.color = colorVal(m.ann_return);
+document.getElementById("m-bench-ann").textContent = "基准: " + fmtPct(m.bench_ann_return);
+
+document.getElementById("m-total-cost").textContent = fmtMoney(m.total_cost);
+document.getElementById("m-total-cost").style.color = NEUTRAL;
+
+document.getElementById("m-final-equity").textContent = fmtMoney(m.final_equity);
+document.getElementById("m-final-equity").style.color = colorVal(m.cum_return);
+document.getElementById("m-bench-final").textContent = "基准: " + fmtMoney(m.bench_final_equity);
+
+document.getElementById("m-alpha").textContent = (m.alpha_final >= 0 ? "+" : "") + fmtMoney(m.alpha_final);
+document.getElementById("m-alpha").style.color = colorVal(m.alpha_final);
+
+// ── 信号统计 ──
+var ss = D.signalStats;
+document.getElementById("ss-gc").textContent = ss.golden_crosses;
+document.getElementById("ss-dc").textContent = ss.death_crosses;
+document.getElementById("ss-freq").textContent = ss.signals_per_month;
+document.getElementById("ss-hold").textContent = ss.avg_hold_days;
+document.getElementById("ss-complete").textContent = ss.complete_trades;
+
+// ── 交易记录表 ──
+var tb = document.getElementById("trades-body");
+var tradesHtml = "";
+for (var i = 0; i < D.trades.length; i++) {
+  var t = D.trades[i];
+  var cls = t.type === "buy" ? "buy-tag" : "sell-tag";
+  var typeStr = t.type === "buy" ? "买入" : "卖出";
+  var dt = t.date.length === 8 ? t.date.substring(0,4) + "-" + t.date.substring(4,6) + "-" + t.date.substring(6,8) : t.date;
+  tradesHtml += '<tr><td>' + (i+1) + '</td><td>' + dt + '</td><td class="' + cls + '">' + typeStr + '</td>';
+  tradesHtml += '<td>¥' + t.price.toFixed(2) + '</td><td>' + t.shares.toFixed(0) + '</td>';
+  tradesHtml += '<td>¥' + t.cost.toFixed(2) + '</td><td>' + (t.reason === 'golden_cross' ? '金叉' : '死叉') + '</td></tr>';
+}
+tb.innerHTML = tradesHtml;
+
+// ── 计算趋势/震荡期 markArea 区间 ──
+var regimeAreas = [];
+if (D.regime && D.regime.length > 0) {
+  var curType = D.regime[0];
+  var startIdx = 0;
+  for (var i = 1; i <= D.regime.length; i++) {
+    if (i === D.regime.length || D.regime[i] !== curType) {
+      if (curType === 'choppy') {
+        regimeAreas.push([
+          { xAxis: D.dates[startIdx] },
+          { xAxis: D.dates[i - 1] }
+        ]);
+      }
+      if (i < D.regime.length) {
+        curType = D.regime[i];
+        startIdx = i;
+      }
+    }
+  }
+}
+
+// ── Chart 1: 股价 + MA + 买卖标记 ──
+var pch = echarts.init(document.getElementById("price-chart"));
+pch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var s = '<div style="font-size:13px;line-height:1.8"><b>' + D.dates[i] + '</b><br>';
+      s += '收盘 <b style="color:' + NEUTRAL + ';font-size:15px">' + D.close[i].toFixed(2) + '</b><br>';
+      if (D.ma5[i] != null) s += 'MA' + D.shortPeriod + ' ' + D.ma5[i].toFixed(2) + '<br>';
+      if (D.ma15[i] != null) s += 'MA' + D.longPeriod + ' ' + D.ma15[i].toFixed(2) + '<br>';
+      if (D.regime && D.regime[i]) s += '市场: ' + (D.regime[i] === 'choppy' ? '震荡期' : '趋势期');
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["收盘价", "MA" + D.shortPeriod, "MA" + D.longPeriod, "买入", "卖出"], top: 4, left: 60, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 42, bottom: 30 },
+  xAxis: {
+    type: "category", data: D.dates,
+    axisLine: { lineStyle: { color: "#21262d" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 },
+    axisTick: { show: false },
+    splitLine: { show: false }
+  },
+  yAxis: {
+    type: "value", name: "价格(¥)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+    scale: true,
+    splitLine: { lineStyle: { color: "#21262d", type: "dashed" } },
+    axisLabel: { color: "#484f58", fontSize: 11 },
+    axisLine: { show: false }
+  },
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 18, bottom: 4 }
+  ],
+  series: [
+    { name: "收盘价", type: "line", data: D.close, symbol: "none", lineStyle: { width: 1.5, color: "#c9d1d9" } },
+    { name: "MA" + D.shortPeriod, type: "line", data: D.ma5, symbol: "none", lineStyle: { width: 1.5, color: NEUTRAL } },
+    { name: "MA" + D.longPeriod, type: "line", data: D.ma15, symbol: "none", lineStyle: { width: 1.5, color: PURPLE } },
+    {
+      name: "买入", type: "scatter", data: D.buyMarkers, symbol: "triangle", symbolSize: 16,
+      itemStyle: { color: UP, borderColor: "#fff", borderWidth: 1 },
+      z: 10,
+      label: { show: true, position: "bottom", color: UP, fontSize: 10, formatter: "买" }
+    },
+    {
+      name: "卖出", type: "scatter", data: D.sellMarkers, symbol: "triangle", symbolRotate: 180, symbolSize: 16,
+      itemStyle: { color: DOWN, borderColor: "#fff", borderWidth: 1 },
+      z: 10,
+      label: { show: true, position: "top", color: DOWN, fontSize: 10, formatter: "卖" }
+    },
+    {
+      name: "震荡期", type: "line", data: [],
+      markArea: {
+        silent: true,
+        itemStyle: { color: "rgba(243,156,18,0.08)", borderColor: "rgba(243,156,18,0.2)", borderWidth: 1 },
+        data: regimeAreas
+      }
+    }
+  ]
+});
+
+// ── Chart 2: 权益曲线 + alpha ──
+var ech = echarts.init(document.getElementById("equity-chart"));
+ech.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var s = '<div style="font-size:13px;line-height:1.8"><b>' + D.dates[i] + '</b><br>';
+      s += '策略权益 <b style="color:' + UP + '">' + fmtMoney(D.strategyEquity[i]) + '</b><br>';
+      s += '基准权益 <b style="color:' + BLUE + '">' + fmtMoney(D.benchmarkEquity[i]) + '</b><br>';
+      s += '超额收益 <b style="color:' + (D.alpha[i] >= 0 ? UP : DOWN) + '">' + (D.alpha[i] >= 0 ? "+" : "") + fmtMoney(D.alpha[i]) + '</b>';
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["策略权益", "基准权益(买入持有)", "超额收益"], top: 4, left: 60, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "7%", top: 42, bottom: 30 },
+  xAxis: {
+    type: "category", data: D.dates,
+    axisLine: { lineStyle: { color: "#21262d" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 },
+    axisTick: { show: false },
+    splitLine: { show: false }
+  },
+  yAxis: [
+    {
+      type: "value", name: "权益(¥)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+      scale: true,
+      splitLine: { lineStyle: { color: "#21262d", type: "dashed" } },
+      axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return "¥" + (v/10000).toFixed(1) + "万"; } },
+      axisLine: { show: false }
+    },
+    {
+      type: "value", name: "超额(¥)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+      scale: true,
+      splitLine: { show: false },
+      axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return (v/10000).toFixed(1) + "万"; } },
+      axisLine: { show: false }
+    }
+  ],
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 18, bottom: 4 }
+  ],
+  series: [
+    { name: "策略权益", type: "line", data: D.strategyEquity, symbol: "none", lineStyle: { width: 2, color: UP }, areaStyle: { color: "rgba(231,76,60,0.08)" } },
+    { name: "基准权益(买入持有)", type: "line", data: D.benchmarkEquity, symbol: "none", lineStyle: { width: 1.5, color: BLUE, type: "dashed" } },
+    { name: "超额收益", type: "line", data: D.alpha, symbol: "none", yAxisIndex: 1, lineStyle: { width: 1, color: NEUTRAL }, areaStyle: { color: "rgba(243,156,18,0.1)" } }
+  ]
+});
+
+// ── Chart 3: 回撤曲线 ──
+var dch = echarts.init(document.getElementById("drawdown-chart"));
+dch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var s = '<div style="font-size:13px;line-height:1.8"><b>' + D.dates[i] + '</b><br>';
+      s += '策略回撤 <b style="color:' + DOWN + '">' + D.strategyDrawdown[i].toFixed(2) + '%</b><br>';
+      s += '基准回撤 <b style="color:' + BLUE + '">' + D.benchmarkDrawdown[i].toFixed(2) + '%</b>';
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["策略回撤", "基准回撤"], top: 4, left: 60, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 36, bottom: 30 },
+  xAxis: {
+    type: "category", data: D.dates,
+    axisLine: { lineStyle: { color: "#21262d" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 },
+    axisTick: { show: false },
+    splitLine: { show: false }
+  },
+  yAxis: {
+    type: "value", name: "回撤(%)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+    splitLine: { lineStyle: { color: "#21262d", type: "dashed" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.toFixed(0) + "%"; } },
+    axisLine: { show: false }
+  },
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 18, bottom: 4 }
+  ],
+  series: [
+    { name: "策略回撤", type: "line", data: D.strategyDrawdown, symbol: "none", lineStyle: { width: 1.5, color: DOWN }, areaStyle: { color: "rgba(46,204,113,0.12)" } },
+    { name: "基准回撤", type: "line", data: D.benchmarkDrawdown, symbol: "none", lineStyle: { width: 1.2, color: BLUE, type: "dashed" } }
+  ]
+});
+
+// ── Sync zoom ──
+pch.group = "sync";
+ech.group = "sync";
+dch.group = "sync";
+echarts.connect("sync");
+
+// ── Responsive ──
+window.addEventListener("resize", function() { pch.resize(); ech.resize(); dch.resize(); });
+</script>
+</body>
+</html>
