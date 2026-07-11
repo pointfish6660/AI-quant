@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>__STOCK_NAME__ (__STOCK_CODE__) 双均线策略回测看板</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:#0d1117;color:#c9d1d9;}
+.header{background:linear-gradient(135deg,#161b22,#0d1117);border-bottom:1px solid #21262d;padding:20px 32px 14px;text-align:center;}
+.header h1{font-size:26px;font-weight:700;margin-bottom:6px;background:linear-gradient(90deg,#e74c3c,#f39c12);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.header .subtitle{font-size:13px;color:#6e7681;}
+.header .params{font-size:12px;color:#8b949e;margin-top:4px;}
+.metric-section{max-width:1400px;margin:14px auto;padding:0 16px;}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.metric-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 18px;text-align:center;}
+.metric-card .mc-title{font-size:12px;color:#6e7681;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
+.metric-card .mc-strategy{font-size:22px;font-weight:700;margin-bottom:2px;}
+.metric-card .mc-benchmark{font-size:13px;color:#6e7681;}
+.metric-card .mc-label{font-size:10px;color:#484f58;margin-top:2px;}
+.signal-stats{max-width:1400px;margin:12px auto;padding:0 16px;}
+.signal-stats-bar{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;padding:10px 24px;background:#161b22;border:1px solid #21262d;border-radius:8px;}
+.ss-item{text-align:center;}
+.ss-val{font-size:18px;font-weight:700;margin-bottom:1px;}
+.ss-lbl{font-size:11px;color:#6e7681;}
+.container{max-width:1400px;margin:0 auto;padding:8px 16px;}
+.chart-box{background:#161b22;border-radius:8px;border:1px solid #21262d;padding:10px;margin-bottom:10px;}
+.chart-title{font-size:14px;font-weight:600;color:#f39c12;margin-bottom:6px;padding-left:4px;}
+#price-chart{width:100%;height:420px;}
+#equity-chart{width:100%;height:320px;}
+#drawdown-chart{width:100%;height:220px;}
+.trades-section{max-width:1400px;margin:14px auto;padding:0 16px;}
+.trades-card{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:16px 20px;}
+.trades-card h3{font-size:16px;color:#f39c12;margin-bottom:10px;}
+.trades-table{width:100%;border-collapse:collapse;font-size:13px;}
+.trades-table th{text-align:left;padding:8px 12px;color:#6e7681;font-size:11px;border-bottom:1px solid #21262d;text-transform:uppercase;letter-spacing:0.5px;}
+.trades-table td{padding:8px 12px;border-bottom:1px solid #1a1f29;}
+.trades-table tr:hover{background:#1a1f29;}
+.buy-tag{color:#e74c3c;font-weight:600;}
+.sell-tag{color:#2ecc71;font-weight:600;}
+.footer{text-align:center;padding:16px;color:#484f58;font-size:11px;border-top:1px solid #21262d;margin-top:8px;line-height:1.8;}
+.up{color:#e74c3c;}.down{color:#2ecc71;}.neutral{color:#f39c12;}
+@media(max-width:768px){
+  .metric-grid{grid-template-columns:repeat(2,1fr);}
+  .header h1{font-size:18px;}
+  #price-chart{height:320px;}#equity-chart{height:240px;}#drawdown-chart{height:180px;}
+  .signal-stats-bar{gap:10px;}.ss-val{font-size:14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>__STOCK_NAME__ &nbsp;__STOCK_CODE__</h1>
+  <div class="subtitle">双均线策略回测看板 &nbsp;|&nbsp; MA__SHORT_PERIOD__ / MA__LONG_PERIOD__ &nbsp;|&nbsp; __DATE_FROM__ ~ __DATE_TO__ &nbsp;|&nbsp; __N_DAYS__ 交易日</div>
+  <div class="params">初始资金: ¥__INITIAL_CAPITAL__ &nbsp;|&nbsp; 佣金万2.5双边 + 印花税卖出千1 + 滑点单边千2</div>
+</div>
+
+<div class="metric-section">
+  <div class="metric-grid">
+    <div class="metric-card">
+      <div class="mc-title">累计回报</div>
+      <div class="mc-strategy" id="m-cum-return">--</div>
+      <div class="mc-benchmark" id="m-bench-cum">基准: --</div>
+      <div class="mc-label">策略 vs 买入持有</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">最大回撤</div>
+      <div class="mc-strategy" id="m-max-dd">--</div>
+      <div class="mc-benchmark" id="m-bench-dd">基准: --</div>
+      <div class="mc-label">峰值到谷值</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">夏普比率</div>
+      <div class="mc-strategy" id="m-sharpe">--</div>
+      <div class="mc-benchmark" id="m-bench-sharpe">基准: --</div>
+      <div class="mc-label">年化 rf=3%</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">胜率 / 盈亏比</div>
+      <div class="mc-strategy" id="m-win-rate">--</div>
+      <div class="mc-benchmark" id="m-pl-ratio">盈亏比: --</div>
+      <div class="mc-label" id="m-trades">-- 轮交易</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">年化收益</div>
+      <div class="mc-strategy" id="m-ann-return">--</div>
+      <div class="mc-benchmark" id="m-bench-ann">基准: --</div>
+      <div class="mc-label">252交易日年化</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">总交易成本</div>
+      <div class="mc-strategy" id="m-total-cost">--</div>
+      <div class="mc-benchmark">&nbsp;</div>
+      <div class="mc-label">佣金+印花税+滑点</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">期末权益</div>
+      <div class="mc-strategy" id="m-final-equity">--</div>
+      <div class="mc-benchmark" id="m-bench-final">基准: --</div>
+      <div class="mc-label">初始 ¥__INITIAL_CAPITAL__</div>
+    </div>
+    <div class="metric-card">
+      <div class="mc-title">超额收益</div>
+      <div class="mc-strategy" id="m-alpha">--</div>
+      <div class="mc-benchmark">策略 - 基准</div>
+      <div class="mc-label">期末绝对差额</div>
+    </div>
+  </div>
+</div>
+
+<div class="signal-stats">
+  <div class="signal-stats-bar">
+    <div class="ss-item"><div class="ss-val up" id="ss-gc">--</div><div class="ss-lbl">金叉次数</div></div>
+    <div class="ss-item"><div class="ss-val down" id="ss-dc">--</div><div class="ss-lbl">死叉次数</div></div>
+    <div class="ss-item"><div class="ss-val neutral" id="ss-freq">--</div><div class="ss-lbl">每月信号数</div></div>
+    <div class="ss-item"><div class="ss-val neutral" id="ss-hold">--</div><div class="ss-lbl">平均持仓天数</div></div>
+    <div class="ss-item"><div class="ss-val" id="ss-complete">--</div><div class="ss-lbl">完整交易轮数</div></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="chart-box">
+    <div class="chart-title">股价走势 + MA__SHORT_PERIOD__/MA__LONG_PERIOD__ + 买卖信号</div>
+    <div id="price-chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">权益曲线 (策略 vs 基准) + 超额收益</div>
+    <div id="equity-chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">回撤曲线 (策略 vs 基准)</div>
+    <div id="drawdown-chart"></div>
+  </div>
+</div>
+
+<div class="trades-section">
+  <div class="trades-card">
+    <h3>交易记录</h3>
+    <table class="trades-table">
+      <thead>
+        <tr><th>序号</th><th>日期</th><th>类型</th><th>成交价</th><th>股数</th><th>交易成本</th><th>原因</th></tr>
+      </thead>
+      <tbody id="trades-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="footer">
+  策略说明: MA__SHORT_PERIOD__/MA__LONG_PERIOD__ 双均线交叉，金叉买入(open价)、死叉卖出(open价)，含交易成本<br>
+  信号逻辑: signal=1/-1(状态) → position=signal.diff()(交叉捕捉, ±2) → exec_signal=signal.shift(1)(避免未来函数)<br>
+  数据来源: 腾讯行情 &nbsp;|&nbsp; 生成: __DATE_TO__ &nbsp;|&nbsp; 仅供学习研究，不构成投资建议
+</div>
+
+<script>
+// ── All data in one JSON blob ──
+var D = __DATA_JSON__;
+
+var UP = "#e74c3c", DOWN = "#2ecc71", NEUTRAL = "#f39c12";
+var BLUE = "#3498db", PURPLE = "#a29bfe", TEAL = "#1abc9c";
+var ZS = 0, ZE = 100;
+
+// ── 填充指标卡片 ──
+function fmtPct(v) { return (v >= 0 ? "+" : "") + v.toFixed(2) + "%"; }
+function fmtMoney(v) { return "¥" + v.toLocaleString("zh-CN", {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+function colorVal(v) { return v >= 0 ? UP : DOWN; }
+
+var m = D.metrics;
+document.getElementById("m-cum-return").textContent = fmtPct(m.cum_return);
+document.getElementById("m-cum-return").style.color = colorVal(m.cum_return);
+document.getElementById("m-bench-cum").textContent = "基准: " + fmtPct(m.bench_cum_return);
+
+document.getElementById("m-max-dd").textContent = m.max_drawdown.toFixed(2) + "%";
+document.getElementById("m-max-dd").style.color = DOWN;
+document.getElementById("m-bench-dd").textContent = "基准: " + m.bench_max_drawdown.toFixed(2) + "%";
+
+document.getElementById("m-sharpe").textContent = m.sharpe.toFixed(3);
+document.getElementById("m-sharpe").style.color = m.sharpe >= 1 ? UP : (m.sharpe >= 0 ? NEUTRAL : DOWN);
+document.getElementById("m-bench-sharpe").textContent = "基准: " + m.bench_sharpe.toFixed(3);
+
+document.getElementById("m-win-rate").textContent = m.win_rate.toFixed(1) + "%";
+document.getElementById("m-win-rate").style.color = m.win_rate >= 50 ? UP : DOWN;
+document.getElementById("m-pl-ratio").textContent = "盈亏比: " + m.profit_loss_ratio.toFixed(2);
+document.getElementById("m-trades").textContent = m.total_trades + " 轮交易";
+
+document.getElementById("m-ann-return").textContent = fmtPct(m.ann_return);
+document.getElementById("m-ann-return").style.color = colorVal(m.ann_return);
+document.getElementById("m-bench-ann").textContent = "基准: " + fmtPct(m.bench_ann_return);
+
+document.getElementById("m-total-cost").textContent = fmtMoney(m.total_cost);
+document.getElementById("m-total-cost").style.color = NEUTRAL;
+
+document.getElementById("m-final-equity").textContent = fmtMoney(m.final_equity);
+document.getElementById("m-final-equity").style.color = colorVal(m.cum_return);
+document.getElementById("m-bench-final").textContent = "基准: " + fmtMoney(m.bench_final_equity);
+
+document.getElementById("m-alpha").textContent = (m.alpha_final >= 0 ? "+" : "") + fmtMoney(m.alpha_final);
+document.getElementById("m-alpha").style.color = colorVal(m.alpha_final);
+
+// ── 信号统计 ──
+var ss = D.signalStats;
+document.getElementById("ss-gc").textContent = ss.golden_crosses;
+document.getElementById("ss-dc").textContent = ss.death_crosses;
+document.getElementById("ss-freq").textContent = ss.signals_per_month;
+document.getElementById("ss-hold").textContent = ss.avg_hold_days;
+document.getElementById("ss-complete").textContent = ss.complete_trades;
+
+// ── 交易记录表 ──
+var tb = document.getElementById("trades-body");
+var tradesHtml = "";
+for (var i = 0; i < D.trades.length; i++) {
+  var t = D.trades[i];
+  var cls = t.type === "buy" ? "buy-tag" : "sell-tag";
+  var typeStr = t.type === "buy" ? "买入" : "卖出";
+  var dt = t.date.length === 8 ? t.date.substring(0,4) + "-" + t.date.substring(4,6) + "-" + t.date.substring(6,8) : t.date;
+  tradesHtml += '<tr><td>' + (i+1) + '</td><td>' + dt + '</td><td class="' + cls + '">' + typeStr + '</td>';
+  tradesHtml += '<td>¥' + t.price.toFixed(2) + '</td><td>' + t.shares.toFixed(0) + '</td>';
+  tradesHtml += '<td>¥' + t.cost.toFixed(2) + '</td><td>' + (t.reason === 'golden_cross' ? '金叉' : '死叉') + '</td></tr>';
+}
+tb.innerHTML = tradesHtml;
+
+// ── 计算趋势/震荡期 markArea 区间 ──
+var regimeAreas = [];
+if (D.regime && D.regime.length > 0) {
+  var curType = D.regime[0];
+  var startIdx = 0;
+  for (var i = 1; i <= D.regime.length; i++) {
+    if (i === D.regime.length || D.regime[i] !== curType) {
+      if (curType === 'choppy') {
+        regimeAreas.push([
+          { xAxis: D.dates[startIdx] },
+          { xAxis: D.dates[i - 1] }
+        ]);
+      }
+      if (i < D.regime.length) {
+        curType = D.regime[i];
+        startIdx = i;
+      }
+    }
+  }
+}
+
+// ── Chart 1: 股价 + MA + 买卖标记 ──
+var pch = echarts.init(document.getElementById("price-chart"));
+pch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var s = '<div style="font-size:13px;line-height:1.8"><b>' + D.dates[i] + '</b><br>';
+      s += '收盘 <b style="color:' + NEUTRAL + ';font-size:15px">' + D.close[i].toFixed(2) + '</b><br>';
+      if (D.ma5[i] != null) s += 'MA' + D.shortPeriod + ' ' + D.ma5[i].toFixed(2) + '<br>';
+      if (D.ma15[i] != null) s += 'MA' + D.longPeriod + ' ' + D.ma15[i].toFixed(2) + '<br>';
+      if (D.regime && D.regime[i]) s += '市场: ' + (D.regime[i] === 'choppy' ? '震荡期' : '趋势期');
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["收盘价", "MA" + D.shortPeriod, "MA" + D.longPeriod, "买入", "卖出"], top: 4, left: 60, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 42, bottom: 30 },
+  xAxis: {
+    type: "category", data: D.dates,
+    axisLine: { lineStyle: { color: "#21262d" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 },
+    axisTick: { show: false },
+    splitLine: { show: false }
+  },
+  yAxis: {
+    type: "value", name: "价格(¥)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+    scale: true,
+    splitLine: { lineStyle: { color: "#21262d", type: "dashed" } },
+    axisLabel: { color: "#484f58", fontSize: 11 },
+    axisLine: { show: false }
+  },
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 18, bottom: 4 }
+  ],
+  series: [
+    { name: "收盘价", type: "line", data: D.close, symbol: "none", lineStyle: { width: 1.5, color: "#c9d1d9" } },
+    { name: "MA" + D.shortPeriod, type: "line", data: D.ma5, symbol: "none", lineStyle: { width: 1.5, color: NEUTRAL } },
+    { name: "MA" + D.longPeriod, type: "line", data: D.ma15, symbol: "none", lineStyle: { width: 1.5, color: PURPLE } },
+    {
+      name: "买入", type: "scatter", data: D.buyMarkers, symbol: "triangle", symbolSize: 16,
+      itemStyle: { color: UP, borderColor: "#fff", borderWidth: 1 },
+      z: 10,
+      label: { show: true, position: "bottom", color: UP, fontSize: 10, formatter: "买" }
+    },
+    {
+      name: "卖出", type: "scatter", data: D.sellMarkers, symbol: "triangle", symbolRotate: 180, symbolSize: 16,
+      itemStyle: { color: DOWN, borderColor: "#fff", borderWidth: 1 },
+      z: 10,
+      label: { show: true, position: "top", color: DOWN, fontSize: 10, formatter: "卖" }
+    },
+    {
+      name: "震荡期", type: "line", data: [],
+      markArea: {
+        silent: true,
+        itemStyle: { color: "rgba(243,156,18,0.08)", borderColor: "rgba(243,156,18,0.2)", borderWidth: 1 },
+        data: regimeAreas
+      }
+    }
+  ]
+});
+
+// ── Chart 2: 权益曲线 + alpha ──
+var ech = echarts.init(document.getElementById("equity-chart"));
+ech.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var s = '<div style="font-size:13px;line-height:1.8"><b>' + D.dates[i] + '</b><br>';
+      s += '策略权益 <b style="color:' + UP + '">' + fmtMoney(D.strategyEquity[i]) + '</b><br>';
+      s += '基准权益 <b style="color:' + BLUE + '">' + fmtMoney(D.benchmarkEquity[i]) + '</b><br>';
+      s += '超额收益 <b style="color:' + (D.alpha[i] >= 0 ? UP : DOWN) + '">' + (D.alpha[i] >= 0 ? "+" : "") + fmtMoney(D.alpha[i]) + '</b>';
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["策略权益", "基准权益(买入持有)", "超额收益"], top: 4, left: 60, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "7%", top: 42, bottom: 30 },
+  xAxis: {
+    type: "category", data: D.dates,
+    axisLine: { lineStyle: { color: "#21262d" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 },
+    axisTick: { show: false },
+    splitLine: { show: false }
+  },
+  yAxis: [
+    {
+      type: "value", name: "权益(¥)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+      scale: true,
+      splitLine: { lineStyle: { color: "#21262d", type: "dashed" } },
+      axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return "¥" + (v/10000).toFixed(1) + "万"; } },
+      axisLine: { show: false }
+    },
+    {
+      type: "value", name: "超额(¥)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+      scale: true,
+      splitLine: { show: false },
+      axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return (v/10000).toFixed(1) + "万"; } },
+      axisLine: { show: false }
+    }
+  ],
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 18, bottom: 4 }
+  ],
+  series: [
+    { name: "策略权益", type: "line", data: D.strategyEquity, symbol: "none", lineStyle: { width: 2, color: UP }, areaStyle: { color: "rgba(231,76,60,0.08)" } },
+    { name: "基准权益(买入持有)", type: "line", data: D.benchmarkEquity, symbol: "none", lineStyle: { width: 1.5, color: BLUE, type: "dashed" } },
+    { name: "超额收益", type: "line", data: D.alpha, symbol: "none", yAxisIndex: 1, lineStyle: { width: 1, color: NEUTRAL }, areaStyle: { color: "rgba(243,156,18,0.1)" } }
+  ]
+});
+
+// ── Chart 3: 回撤曲线 ──
+var dch = echarts.init(document.getElementById("drawdown-chart"));
+dch.setOption({
+  backgroundColor: "#161b22",
+  animation: true,
+  tooltip: {
+    trigger: "axis",
+    axisPointer: { type: "cross" },
+    backgroundColor: "rgba(13,17,23,0.96)",
+    borderColor: "#21262d",
+    textStyle: { color: "#c9d1d9", fontSize: 13 },
+    formatter: function(ps) {
+      var i = ps[0].dataIndex;
+      var s = '<div style="font-size:13px;line-height:1.8"><b>' + D.dates[i] + '</b><br>';
+      s += '策略回撤 <b style="color:' + DOWN + '">' + D.strategyDrawdown[i].toFixed(2) + '%</b><br>';
+      s += '基准回撤 <b style="color:' + BLUE + '">' + D.benchmarkDrawdown[i].toFixed(2) + '%</b>';
+      return s + '</div>';
+    }
+  },
+  legend: { data: ["策略回撤", "基准回撤"], top: 4, left: 60, textStyle: { color: "#6e7681", fontSize: 11 }, itemWidth: 18, itemHeight: 10 },
+  grid: { left: "7%", right: "3%", top: 36, bottom: 30 },
+  xAxis: {
+    type: "category", data: D.dates,
+    axisLine: { lineStyle: { color: "#21262d" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.substring(5); }, rotate: 45 },
+    axisTick: { show: false },
+    splitLine: { show: false }
+  },
+  yAxis: {
+    type: "value", name: "回撤(%)", nameTextStyle: { color: "#484f58", fontSize: 11 },
+    splitLine: { lineStyle: { color: "#21262d", type: "dashed" } },
+    axisLabel: { color: "#484f58", fontSize: 10, formatter: function(v) { return v.toFixed(0) + "%"; } },
+    axisLine: { show: false }
+  },
+  dataZoom: [
+    { type: "inside", start: ZS, end: ZE, xAxisIndex: 0 },
+    { type: "slider", start: ZS, end: ZE, height: 18, bottom: 4 }
+  ],
+  series: [
+    { name: "策略回撤", type: "line", data: D.strategyDrawdown, symbol: "none", lineStyle: { width: 1.5, color: DOWN }, areaStyle: { color: "rgba(46,204,113,0.12)" } },
+    { name: "基准回撤", type: "line", data: D.benchmarkDrawdown, symbol: "none", lineStyle: { width: 1.2, color: BLUE, type: "dashed" } }
+  ]
+});
+
+// ── Sync zoom ──
+pch.group = "sync";
+ech.group = "sync";
+dch.group = "sync";
+echarts.connect("sync");
+
+// ── Responsive ──
+window.addEventListener("resize", function() { pch.resize(); ech.resize(); dch.resize(); });
+</script>
+</body>
+</html>

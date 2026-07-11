@@ -1,0 +1,103 @@
+# ===================================================================
+# 兆易创新（GigaDevice）取数 Spec
+# 纯 A股：科创板 603986.SH
+# 特点：半导体存储芯片/MCU龙头，科创板 ±20% 涨跌幅
+# ===================================================================
+
+meta:
+  task_id: task8
+  task_name: GigaDevice
+  created: 2026-07-11
+  status: planned
+  analyst: 大卫
+
+target:
+  name_cn: 兆易创新
+  name_en: GigaDevice
+  markets:
+    - market: A股
+      code: 603986.SH
+      tencent_code: sh603986
+      exchange: 上交所
+      board: 科创板
+      currency: CNY
+      pct_limit: 20                # 科创板 ±20%（非主板10%！）
+  industry: 半导体
+  sector: 存储芯片/MCU
+  notes: 纯 A股，无港股；科创板半导体龙头，双均线策略回测标的
+
+# ── 数据源 ──
+data_source:
+  A股:
+    provider: tencent_quote
+    endpoint: https://web.ifzq.gtimg.cn/appstock/app/fqkline/get
+    params:
+      param: "sh603986,day,,,250,qfq"
+    limit: 250
+    notes: 免token；返回 data.sh603986.qfqday 或 data.sh603986.day 数组
+  港股: null
+
+# ── 数据维度 ──
+data_dimensions:
+  - name: 日K线行情
+    required: true
+    fields: [trade_date, open, close, high, low, vol, amount, pct_chg, turnover]
+    history_days: 250
+    adjust: qfq
+    scope: [A股]
+  - name: 双均线策略回测
+    required: true
+    fields: [ma_short, ma_long, signal, position, exec_signal, equity, benchmark_equity, drawdown]
+    params:
+      short_period: 5
+      long_period: 15
+      initial_capital: 100000
+      commission_rate: 0.00025
+      stamp_tax_rate: 0.001
+      slippage_rate: 0.002
+
+# ── 字段映射 ──
+field_mapping:
+  A股_tencent:
+    trade_date: "k[0].replace('-','')"
+    open: "float(k[1])"
+    close: "float(k[2])"
+    high: "float(k[3])"
+    low: "float(k[4])"
+    vol: "float(k[5])"
+    amount: "vol * (high+low+close)/3"
+    pct_chg: "(close - prev_close) / prev_close * 100"
+    turnover: null
+
+# ── 输出 ──
+output:
+  formats: [csv, json]
+  encoding: utf-8-sig
+  path_pattern:
+    csv: "data/gdpy_daily.csv"
+    json: "data/gdpy_daily.json"
+  sort: ascending_by_date
+  date_format:
+    A股: YYYYMMDD
+
+# ── 质量校验 ──
+quality_check:
+  - rule: 字段完整性
+    desc: trade_date/open/close/high/low/vol 非空
+  - rule: 日期唯一
+    desc: trade_date 不重复
+  - rule: 价格合理性
+    desc: low <= close <= high 且 low <= open <= high
+  - rule: 涨跌幅阈值
+    desc: "科创板 |pct_chg| <= 20%"
+    on_violation: warn
+  - rule: 交易日连续性
+    desc: 除节假日外无跳空
+    on_violation: warn
+
+# ── 交付物 ──
+deliverables:
+  - data/gdpy_daily.csv
+  - data/gdpy_daily.json
+  - outputs/gdpy_backtest_dashboard.html
+  - README.md

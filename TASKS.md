@@ -16,6 +16,7 @@
 | task5 | `task5-BYD/` | 比亚迪 002594.SZ + 01211.HK | 计划中 | A+H 双重上市，新能源车+电池，spec 已就绪：`specs/byd.yaml` |
 | task6 | `task6-CYPC/` | 长江电力 600900.SH | 计划中 | 纯 A股，水电蓝筹，分红标的，spec 已就绪：`specs/cypc.yaml` |
 | task7 | `task7-env-intro/` | — | 已完成 | Python 量化环境配置 + 工具指南 HTML（GitHub Pages 部署） |
+| task8 | `task8-GigaDevice/` | 兆易创新 603986.SH | 进行中 | 纯 A股科创板，双均线(MA5/MA15)策略回测看板，spec 已就绪：`specs/gdpy.yaml`，skill：`dual-ma-backtest` |
 
 ---
 
