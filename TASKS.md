@@ -15,6 +15,7 @@
 | task4 | `task4-SMIC/` | 中芯国际 688981.SH + 00981.HK | 计划中 | A+H 双重上市，半导体龙头，spec 已就绪：`specs/smic.yaml` |
 | task5 | `task5-BYD/` | 比亚迪 002594.SZ + 01211.HK | 计划中 | A+H 双重上市，新能源车+电池，spec 已就绪：`specs/byd.yaml` |
 | task6 | `task6-CYPC/` | 长江电力 600900.SH | 计划中 | 纯 A股，水电蓝筹，分红标的，spec 已就绪：`specs/cypc.yaml` |
+| task7 | `task7-env-intro/` | — | 已完成 | Python 量化环境配置 + 工具指南 HTML（GitHub Pages 部署） |
 
 ---
 
@@ -63,4 +64,4 @@ Spec 固化了标的元信息、数据源、字段映射、输出格式、质量
 
 ---
 
-*最后更新: 2026-07-01*
+*最后更新: 2026-07-11*

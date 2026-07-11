@@ -1,0 +1,67 @@
+# ============================================================
+# BA-quant Python 环境依赖清单
+# Python: 3.13.12 (managed venv)
+# 用途: 量化交易 / 数据分析 / 机器学习
+# 安装: python -m pip install -r requirements.txt
+#       国内加速: -i https://pypi.tuna.tsinghua.edu.cn/simple
+# ============================================================
+
+# ---------- 1. 数据分析核心 ----------
+pandas>=2.2            # 数据处理核心(DataFrame)
+numpy>=2.0             # 数值计算 (已预装, 此处声明)
+scipy>=1.13            # 科学计算 (统计/优化/信号处理)
+statsmodels>=0.14      # 统计建模 (回归/时间序列/ARCH-GARCH)
+
+# ---------- 2. 可视化 ----------
+matplotlib>=3.9        # 基础绑图
+seaborn>=0.13          # 统计可视化
+plotly>=5.24           # 交互式图表
+mplfinance>=0.12.9b5    # 金融K线图 (蜡烛图/均线/成交量) [注: 仅预发布版, 需 --pre]
+bokeh>=3.5             # 高性能交互可视化 (可选)
+
+# ---------- 3. 金融数据获取 ----------
+tushare>=1.4            # A股数据 (需 token, pro接口)
+akshare>=1.13           # A股/港股/美股/宏观 全市场数据 (免token)
+yfinance>=0.2           # 美股/港股 Yahoo Finance
+lxml>=5.2               # akshare HTML解析依赖
+beautifulsoup4>=4.12    # 网页抓取解析
+html5lib>=1.1           # HTML解析后备
+
+# ---------- 4. 量化交易 / 技术指标 / 回测 ----------
+pandas-ta>=0.3.14b0     # 技术指标库 (纯Python, 替代TA-Lib) [注: 仅预发布版, 需 --pre]
+ta>=0.11                # 技术指标 (备选, 实现更全)
+backtrader>=1.9.78      # 事件驱动回测框架
+vectorbt>=1.0           # 向量化高性能回测 (依赖 numba>=0.66)
+quantstats>=0.0.62      # 绩效分析报告 (empyrical/pyfolio 的现代替代, 兼容 Py3.13)
+# empyrical / pyfolio: Python 3.13 不兼容 (configparser.SafeConfigParser 已移除), 已弃用
+
+# ---------- 5. 机器学习 ----------
+scikit-learn>=1.5       # 传统ML (分类/回归/聚类/降维)
+xgboost>=2.1            # 梯度提升树 (量化因子建模主力)
+lightgbm>=4.5           # 梯度提升树 (更快的替代)
+joblib>=1.4             # 模型持久化/并行
+
+# ---------- 6. Jupyter 环境 ----------
+jupyterlab>=4.2         # Jupyter Lab 主环境
+ipykernel>=6.29         # Python 内核
+notebook>=7.2           # 经典 Notebook (兼容)
+ipympl>=0.9             # matplotlib 交互式后端
+
+# ---------- 7. 工具 (已预装, 此处声明) ----------
+openpyxl>=3.1           # Excel 读写
+tqdm>=4.66              # 进度条
+requests>=2.31          # HTTP
+httpx>=0.27             # 异步 HTTP
+
+# ============================================================
+# 说明:
+# 1. TA-Lib 未列入: Python 3.13 无官方预编译 wheel, 编译安装易失败。
+#    技术指标请用 pandas-ta / ta 替代, 功能覆盖面足够。
+#    如确需 TA-Lib, 叨叨后再单独处理 (需找对应 wheel)。
+# 2. 深度学习框架 (PyTorch/TensorFlow) 未列入: 体积大 (2-5GB),
+#    按需安装。CPU 版命令:
+#      pip install torch --index-url https://download.pytorch.org/whl/cpu
+#      pip install tensorflow-cpu
+# 3. 安装后建议注册 Jupyter kernel:
+#      python -m ipykernel install --user --name ba-quant --display-name "BA-quant (Py3.13)"
+# ============================================================
