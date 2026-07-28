@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>狸花猫幼崽 · 城市居家饲养计划书</title>
+<style>
+  :root{
+    --bg:#fff8f0; --card:#ffffff; --ink:#3a332c; --muted:#8a7d70;
+    --primary:#e8853a; --primary-soft:#fbe7d6; --secondary:#5aa9a0;
+    --secondary-soft:#dcefec; --warn:#d9534f; --warn-soft:#f7dedd;
+    --line:#efe3d6; --shadow:0 6px 20px rgba(180,130,80,.12);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",system-ui,sans-serif;
+    line-height:1.75;font-size:16px;
+  }
+  header.hero{
+    background:linear-gradient(135deg,#fbe7d6,#dcefec);
+    padding:34px 20px 28px;text-align:center;border-bottom:3px solid var(--line);
+  }
+  header.hero h1{margin:0 0 6px;font-size:28px;letter-spacing:1px}
+  header.hero p{margin:4px 0;color:var(--muted);font-size:15px}
+  .badge{display:inline-block;background:#fff;color:var(--primary);
+    border:1px solid var(--primary);border-radius:999px;padding:3px 12px;font-size:13px;margin:6px 4px 0}
+  nav.top{
+    position:sticky;top:0;z-index:50;background:rgba(255,248,240,.95);
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--line);
+    display:flex;gap:4px;overflow-x:auto;padding:10px 12px;font-size:13px;
+  }
+  nav.top a{white-space:nowrap;text-decoration:none;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  nav.top a:hover{background:var(--primary-soft);border-color:var(--primary)}
+  main{max-width:920px;margin:0 auto;padding:18px 14px 60px}
+  section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 20px;margin:18px 0;scroll-margin-top:64px}
+  h2{font-size:21px;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+  h2 .num{background:var(--primary);color:#fff;width:30px;height:30px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
+  h3{font-size:17px;margin:20px 0 8px;color:var(--secondary)}
+  h4{font-size:15px;margin:14px 0 6px;color:var(--primary)}
+  p{margin:8px 0}
+  ul,ol{margin:8px 0;padding-left:22px}
+  li{margin:4px 0}
+  .muted{color:var(--muted);font-size:14px}
+  .card{background:var(--primary-soft);border-radius:12px;padding:14px 16px;margin:12px 0}
+  .card.teal{background:var(--secondary-soft)}
+  .card.warn{background:var(--warn-soft)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+  th{background:var(--primary-soft);color:var(--ink);font-weight:600}
+  tr:nth-child(even) td{background:#fdf6ef}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600}
+  .pill.ok{background:var(--secondary-soft);color:#2e7d74}
+  .pill.warn{background:var(--warn-soft);color:var(--warn)}
+  .pill.act{background:var(--primary-soft);color:var(--primary)}
+  .control{background:linear-gradient(135deg,#fff,#fdf3ea);border:2px dashed var(--primary);
+    border-radius:14px;padding:16px;margin:6px 0 4px}
+  .control label{font-weight:600;display:block;margin:8px 0 4px}
+  input[type=date],input[type=number],select{
+    font-family:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);
+    border-radius:10px;background:#fff;color:var(--ink);width:100%;max-width:240px}
+  .result{margin-top:10px;background:#fff;border:1px solid var(--secondary);
+    border-radius:12px;padding:14px 16px}
+  .result b{color:var(--primary)}
+  .svgbox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;
+    margin:14px 0;text-align:center}
+  .svgbox svg{width:100%;height:auto;max-width:640px}
+  .cap{font-size:13px;color:var(--muted);margin-top:6px}
+  .do{background:var(--secondary-soft);border-left:5px solid var(--secondary);border-radius:10px;padding:12px 14px;margin:10px 0}
+  .dont{background:var(--warn-soft);border-left:5px solid var(--warn);border-radius:10px;padding:12px 14px;margin:10px 0}
+  .do h4,.dont h4{margin-top:0}
+  .er-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0;background:#fff}
+  .er-card .tag{font-weight:700;color:var(--warn)}
+  .task{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;border:1px solid var(--line);
+    border-radius:10px;margin:8px 0;background:#fff}
+  .task input{margin-top:5px;width:18px;height:18px;accent-color:var(--secondary);flex:0 0 auto}
+  .task.done span{text-decoration:line-through;color:var(--muted)}
+  .progress{font-size:14px;color:var(--secondary);font-weight:600;margin:6px 0}
+  .game{background:var(--secondary-soft);border-radius:12px;padding:14px 16px;margin:10px 0}
+  .game h4{color:#2e7d74;margin-top:0}
+  .edit{width:84px;padding:5px 7px;font-size:13px;display:inline-block}
+  .calc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:7px 0}
+  .calc-row span.lbl{min-width:120px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:24px 16px 40px;line-height:1.7}
+  .disclaimer{background:#fff;border:1px dashed var(--warn);border-radius:12px;padding:12px 16px;margin:14px 0;font-size:13px;color:var(--muted)}
+  .toggle-calc{cursor:pointer;color:var(--primary);font-size:14px;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>🐱 狸花猫幼崽 · 城市居家饲养计划书</h1>
+  <p>从乡村散养 → 城市楼房居家饲养的「过渡期 + 长期」全套方案</p>
+  <p class="muted">为两名女童家庭量身定制 · 房门常开 · 自由出入户型</p>
+  <div>
+    <span class="badge">本土纯种狸花猫</span>
+    <span class="badge">幼崽 · 身体素质强健</span>
+    <span class="badge">未驱虫 · 未接种疫苗</span>
+  </div>
+</header>
+
+<nav class="top">
+  <a href="#basics">基础信息</a>
+  <a href="#transition">1 过渡适应</a>
+  <a href="#diet">2 饮食投喂</a>
+  <a href="#layout">3 全屋布置</a>
+  <a href="#vaccine">4 疫苗驱虫</a>
+  <a href="#care">5 日常洗护</a>
+  <a href="#emergency">6 应急手册</a>
+  <a href="#budget">7 开销与任务</a>
+</nav>
+
+<main>
+
+  <!-- ===== 基础信息 + 控制面板 ===== -->
+  <section id="basics">
+    <h2><span class="num">★</span>基础信息与日期设定</h2>
+    <p>本计划书围绕一只<strong>乡村散养、体质强健、尚未驱虫疫苗</strong>的本土纯种狸花猫幼崽设计。
+       楼房环境对它而言是全新世界，关键在于<strong>「慢过渡、稳观察、防应激」</strong>。请先在下方填入接猫日期，
+       全书的疫苗/驱虫时间轴会自动推算。</p>
+
+    <div class="control">
+      <label for="adoptDate">📅 接猫日期（接回家第一天）</label>
+      <input type="date" id="adoptDate">
+      <p class="muted">提示：若暂时没定具体日子，可先填预计日期，之后随时修改，下方所有日期会同步刷新。</p>
+      <div class="result" id="adoptSummary">请选择接猫日期后查看推算结果。</div>
+    </div>
+
+    <div class="card teal">
+      <h4>🐾 猫咪档案（可手填）</h4>
+      <div class="grid3">
+        <div>预估月龄：<input class="edit" type="number" id="ageM" min="1" max="18" value="3"> 个月</div>
+        <div>当前体重：<input class="edit" type="number" id="weightKg" min="0.3" max="8" step="0.1" value="1.2"> kg</div>
+        <div>性别：<select class="edit" id="sex"><option>未知</option><option>公</option><option>母</option></select></div>
+      </div>
+      <p class="muted">这些信息会用于「饮食投喂方案」的食量计算与「疫苗时间表」的月龄判断。</p>
+    </div>
+  </section>
+
+  <!-- ===== 1 过渡期 ===== -->
+  <section id="transition">
+    <h2><span class="num">1</span>接猫过渡期适应方案</h2>
+    <p>乡村散养猫习惯了开阔、有遮蔽、气味丰富的环境，突然进入封闭楼房容易出现<strong>应激</strong>。
+       前 7 天是最关键的「安全感建立期」。</p>
+
+    <h3>前 7 天居家注意事项</h3>
+    <div id="transitionDays" class="card"></div>
+
+    <h3>环境改造要点</h3>
+    <div class="grid2">
+      <div class="do"><h4>✅ 必做</h4>
+        <ul>
+          <li><b>封窗封阳台：</b>狸花猫弹跳力强，所有可开启窗户加装金刚网/限位器，缝隙≤5cm。</li>
+          <li><b>收纳危险品：</b>细线、橡皮筋、针线、药品、清洁剂、绿植（百合/郁金香等对猫有毒）收进带门柜。</li>
+          <li><b>留退路：</b>准备纸箱/猫窝作「安全屋」，门常开户型也请在安静角落留一处它可独处的空间。</li>
+          <li><b>先隔离后自由：</b>到家前 2–3 天先限缩小空间（一间房），熟悉后再逐步开放全屋。</li>
+        </ul>
+      </div>
+      <div class="dont"><h4>❌ 忌做</h4>
+        <ul>
+          <li>到家当天就强行抱撸、让两名女童围观逗弄。</li>
+          <li>频繁更换猫粮、立刻洗澡（应激期洗澡极易生病）。</li>
+          <li>门窗大开无人看管，或把猫放出楼房公共区域。</li>
+          <li>用大声、追逐方式"逗"它，破坏信任。</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>习性磨合技巧</h3>
+    <ul>
+      <li><b>气味过渡：</b>接猫时带一点乡下的旧垫料/泥土，混进新猫窝，减少陌生感。</li>
+      <li><b>人猫距离：</b>前 3 天你做你的事，让它自己探索；用零食「远远投喂」建立正向联想。</li>
+      <li><b>女童参与：</b>让小女孩负责"安静陪伴"和"投喂"，禁止追逐；互动以猫主动靠近为准。</li>
+      <li><b>夜间活动：</b>狸花猫夜行性强，备好夜间玩具/猫爬架，避免它半夜扰民拆家。</li>
+    </ul>
+
+    <h3>楼房应激反应对策</h3>
+    <p>应激不是"矫情"，是生理报警。识别越早，恢复越快。</p>
+    <div class="svgbox">
+      <svg viewBox="0 0 640 200" role="img" aria-label="应激对策示意图">
+        <defs>
+          <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L8,3 L0,6 Z" fill="#e8853a"/>
+          </marker>
+        </defs>
+        <rect x="10" y="60" width="150" height="80" rx="12" fill="#fbe7d6" stroke="#e8853a"/>
+        <text x="85" y="95" text-anchor="middle" font-size="15" fill="#3a332c">诱因</text>
+        <text x="85" y="118" text-anchor="middle" font-size="12" fill="#8a7d70">搬家/噪音/生人</text>
+        <line x1="160" y1="100" x2="200" y2="100" stroke="#e8853a" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="200" y="60" width="150" height="80" rx="12" fill="#f7dedd" stroke="#d9534f"/>
+        <text x="275" y="92" text-anchor="middle" font-size="15" fill="#3a332c">应激表现</text>
+        <text x="275" y="115" text-anchor="middle" font-size="12" fill="#8a7d70">躲藏/不吃/腹泻/炸毛</text>
+        <line x1="350" y1="100" x2="390" y2="100" stroke="#e8853a" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="390" y="60" width="150" height="80" rx="12" fill="#dcefec" stroke="#5aa9a0"/>
+        <text x="465" y="92" text-anchor="middle" font-size="15" fill="#3a332c">缓解措施</text>
+        <text x="465" y="115" text-anchor="middle" font-size="12" fill="#8a7d70">安静/费洛蒙/少食多餐</text>
+        <line x1="540" y1="100" x2="580" y2="100" stroke="#e8853a" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="580" y="60" width="50" height="80" rx="12" fill="#fff" stroke="#5aa9a0"/>
+        <text x="605" y="105" text-anchor="middle" font-size="13" fill="#2e7d74">恢复</text>
+        <text x="320" y="175" text-anchor="middle" font-size="13" fill="#8a7d70">识别诱因 → 观察症状 → 立即减负 → 多数 24–48h 自行恢复，持续异常请就医</text>
+      </svg>
+      <div class="cap">图 1 · 应激「诱因—症状—缓解」闭环</div>
+    </div>
+    <div class="card warn">
+      <b>⚠️ 何时必须就医：</b>应激超过 48 小时不进食、反复呕吐/腹泻带血、呼吸急促、精神极度萎靡，
+      或本身未驱虫疫苗、免疫力未知——不要硬扛，及时就医。
+    </div>
+  </section>
+
+  <!-- ===== 2 饮食 ===== -->
+  <section id="diet">
+    <h2><span class="num">2</span>饮食投喂方案</h2>
+    <p>乡村散养猫肠胃经受过"野路子"锻炼，<strong>消化耐受度普遍较好</strong>，但这反而容易让主人放松警惕。
+       转家养最大的饮食风险是<strong>突然换粮 + 暴饮暴食</strong>导致急性胃肠炎。原则是：延续旧习惯、循序渐进。</p>
+
+    <h3>食量计算器（按体重/月龄）</h3>
+    <div class="control">
+      <div class="calc-row">
+        <span class="lbl">当前体重 (kg)</span>
+        <input type="number" id="wKg" min="0.3" max="8" step="0.1" value="1.2">
+        <span class="lbl">月龄</span>
+        <input type="number" id="aMo" min="1" max="18" step="1" value="3">
+        <button class="toggle-calc" onclick="calcFood()" style="border:1px solid var(--primary);background:var(--primary);color:#fff;border-radius:8px;padding:8px 16px;cursor:pointer">计算</button>
+      </div>
+      <div class="result" id="foodResult">点击「计算」获取每日建议食量与频次。</div>
+    </div>
+
+    <h3>过渡期口粮 vs 长期主食</h3>
+    <table>
+      <tr><th>阶段</th><th>推荐口粮</th><th>要点</th></tr>
+      <tr><td><b>过渡期</b><br>(前 2–4 周)</td>
+        <td>尽量沿用乡下原有食物（剩饭/生骨肉/杂食）逐步混入<b>幼猫粮/主食罐</b></td>
+        <td>「7 天换粮法」：旧粮比例从 80%→0 逐日递减，观察大便成型度</td></tr>
+      <tr><td><b>长期主食</b><br>(稳定后)</td>
+        <td>优质<b>幼猫粮（高蛋白、无谷优先）</b> + 每周 2–3 次主食罐/水煮鸡胸</td>
+        <td>狸花猫活动量大、肌肉型，蛋白质需求高；自由采食或定时定量均可</td></tr>
+    </table>
+
+    <h3>辅食与禁忌食物</h3>
+    <div class="grid2">
+      <div class="do"><h4>✅ 可少量辅食</h4>
+        <ul>
+          <li>水煮鸡胸肉 / 牛肉（无盐无油）</li>
+          <li>蛋黄（熟，每周 2 个以内）</li>
+          <li>南瓜泥（助消化）、猫草（化毛）</li>
+          <li>主食级冻干 / 生骨肉（需冷冻杀菌，新手慎选）</li>
+        </ul>
+      </div>
+      <div class="dont"><h4>❌ 绝对禁忌</h4>
+        <ul>
+          <li>巧克力、咖啡、葡萄/提子（肾衰竭）</li>
+          <li>洋葱、大蒜、大葱（溶血）</li>
+          <li>牛奶（多数猫乳糖不耐，易腹泻）</li>
+          <li>生鱼生虾长期单一（缺硫胺素）、禽类骨头（尖锐卡喉）</li>
+          <li>人类调味零食、含盐含糖食品</li>
+        </ul>
+      </div>
+    </div>
+    <p class="muted">农村猫常偷吃人类饭菜，进城后务必统一「全家不下桌喂食」，避免两名女童出于爱心偷偷投喂禁忌食物。</p>
+  </section>
+
+  <!-- ===== 3 环境布置 ===== -->
+  <section id="layout">
+    <h2><span class="num">3</span>全屋环境布置</h2>
+    <p>本户居住特点是<strong>房门日常常开、猫咪可自由进出屋内</strong>。这意味着猫的动线覆盖全屋，
+       布置核心是把「食、厕、憩」三者拉开距离，并消除全屋隐患。</p>
+
+    <h3>自由出入户型 · 功能分区示意</h3>
+    <div class="svgbox">
+      <svg viewBox="0 0 640 380" role="img" aria-label="户型布置示意图">
+        <!-- 外墙 -->
+        <rect x="20" y="20" width="600" height="340" rx="14" fill="#fff" stroke="#e8853a" stroke-width="3"/>
+        <!-- 门常开 -->
+        <rect x="300" y="350" width="60" height="14" fill="#dcefec" stroke="#5aa9a0" stroke-width="2"/>
+        <text x="330" y="378" text-anchor="middle" font-size="12" fill="#2e7d74">🚪 门常开（自由进出）</text>
+        <!-- 猫窝 -->
+        <rect x="50" y="55" width="120" height="80" rx="10" fill="#fbe7d6" stroke="#e8853a"/>
+        <text x="110" y="95" text-anchor="middle" font-size="13" fill="#3a332c">🛏 猫窝（安静角）</text>
+        <text x="110" y="115" text-anchor="middle" font-size="11" fill="#8a7d70">远离门口</text>
+        <!-- 食水区 -->
+        <rect x="250" y="55" width="120" height="80" rx="10" fill="#dcefec" stroke="#5aa9a0"/>
+        <text x="310" y="95" text-anchor="middle" font-size="13" fill="#3a332c">🍚 食水区</text>
+        <text x="310" y="115" text-anchor="middle" font-size="11" fill="#8a7d70">远离猫砂</text>
+        <!-- 猫砂盆 -->
+        <rect x="470" y="55" width="120" height="80" rx="10" fill="#f7dedd" stroke="#d9534f"/>
+        <text x="530" y="95" text-anchor="middle" font-size="13" fill="#3a332c">🚽 猫砂盆</text>
+        <text x="530" y="115" text-anchor="middle" font-size="11" fill="#8a7d70">通风避人</text>
+        <!-- 猫爬架 -->
+        <rect x="50" y="250" width="120" height="80" rx="10" fill="#fff" stroke="#efe3d6"/>
+        <text x="110" y="295" text-anchor="middle" font-size="13" fill="#3a332c">🌿 猫爬架</text>
+        <!-- 女童活动区 -->
+        <rect x="250" y="250" width="120" height="80" rx="10" fill="#fff" stroke="#efe3d6"/>
+        <text x="310" y="290" text-anchor="middle" font-size="13" fill="#3a332c">👧 女童游戏区</text>
+        <text x="310" y="308" text-anchor="middle" font-size="11" fill="#8a7d70">互动在地面</text>
+        <!-- 危险品柜 -->
+        <rect x="470" y="250" width="120" height="80" rx="10" fill="#fff" stroke="#d9534f" stroke-dasharray="5 4"/>
+        <text x="530" y="290" text-anchor="middle" font-size="13" fill="#3a332c">🔒 危险收纳柜</text>
+        <text x="530" y="308" text-anchor="middle" font-size="11" fill="#8a7d70">带门上锁</text>
+        <!-- 动线 -->
+        <path d="M110,135 C200,200 400,200 530,135" fill="none" stroke="#e8853a" stroke-width="2" stroke-dasharray="6 5"/>
+        <path d="M310,135 C310,180 110,200 110,250" fill="none" stroke="#5aa9a0" stroke-width="2" stroke-dasharray="6 5"/>
+        <text x="320" y="195" text-anchor="middle" font-size="11" fill="#8a7d70">自由动线</text>
+      </svg>
+      <div class="cap">图 2 · 自由出入户型功能分区与动线（食 / 厕 / 憩 三角拉开）</div>
+    </div>
+
+    <h3>摆放位置原则</h3>
+    <ul>
+      <li><b>猫砂盆：</b>放通风、安静、避开门厅人流处；房门常开更要注意它不在"路过必经"处如厕而被打扰。</li>
+      <li><b>食水区：</b>与猫砂盆、猫窝都拉开 ≥1.5 米；水碗另置，远离食碗减少"胡须疲劳"。</li>
+      <li><b>猫窝：</b>高处或角落，能观察全屋又方便撤退；可放纸箱+旧衣物，延续乡下气味。</li>
+      <li><b>危险品：</b>全屋统一收纳上锁，尤其厨房清洁剂、药品、针线——门常开时小孩也可能误碰。</li>
+    </ul>
+
+    <h3>女童与猫相处安全准则</h3>
+    <div class="grid2">
+      <div class="do"><h4>👧 小女孩应该</h4>
+        <ul>
+          <li>坐姿平视，让猫主动靠近再轻抚下巴/脸颊。</li>
+          <li>用逗猫棒远距离互动，不用手当玩具。</li>
+          <li>发现猫耳朵后压、尾巴猛甩、瞳孔放大——立刻停下、退后。</li>
+          <li>互动后洗手；不把脸贴猫脸。</li>
+        </ul>
+      </div>
+      <div class="dont"><h4>🚫 必须禁止</h4>
+        <ul>
+          <li>抓猫腿/尾巴、强行抱、举高高。</li>
+          <li>追着猫跑、尖叫逗弄、两孩争抢逗猫。</li>
+          <li>在猫进食/睡觉/躲藏时打扰。</li>
+          <li>偷偷喂人食（尤其禁忌清单里的）。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="svgbox">
+      <svg viewBox="0 0 640 150" role="img" aria-label="女童安全相处示意">
+        <rect x="20" y="20" width="290" height="110" rx="12" fill="#dcefec" stroke="#5aa9a0"/>
+        <text x="165" y="50" text-anchor="middle" font-size="14" fill="#2e7d74">✅ DO</text>
+        <text x="165" y="78" text-anchor="middle" font-size="12" fill="#3a332c">坐姿·让猫靠近·轻抚下巴</text>
+        <text x="165" y="100" text-anchor="middle" font-size="12" fill="#3a332c">猫示警即停手退后</text>
+        <rect x="330" y="20" width="290" height="110" rx="12" fill="#f7dedd" stroke="#d9534f"/>
+        <text x="475" y="50" text-anchor="middle" font-size="14" fill="#d9534f">❌ DON'T</text>
+        <text x="475" y="78" text-anchor="middle" font-size="12" fill="#3a332c">强抱·追跑·尖叫逗弄</text>
+        <text x="475" y="100" text-anchor="middle" font-size="12" fill="#3a332c">进食/躲藏时打扰</text>
+      </svg>
+      <div class="cap">图 3 · 女童安全相处 Do / Don't</div>
+    </div>
+  </section>
+
+  <!-- ===== 4 疫苗 ===== -->
+  <section id="vaccine">
+    <h2><span class="num">4</span>驱虫 + 疫苗完整时间表</h2>
+    <p>当前猫咪<strong>未驱虫、未接种</strong>，且来自乡村环境（寄生虫暴露风险高），应优先安排驱虫，
+       健康观察 1–2 周后再启动疫苗程序。下表日期依据你填写的接猫日期自动推算。</p>
+
+    <h3>时间轴</h3>
+    <div class="svgbox">
+      <svg viewBox="0 0 640 140" id="vacTimeline" role="img" aria-label="疫苗时间轴">
+        <line x1="30" y1="70" x2="610" y2="70" stroke="#e8853a" stroke-width="3"/>
+      </svg>
+      <div class="cap">图 4 · 疫苗/驱虫时间轴（日期随接猫日期自动刷新）</div>
+    </div>
+
+    <h3>详细时间表</h3>
+    <table id="vacTable">
+      <tr><th>实际日期</th><th>接猫后</th><th>项目</th><th>种类 / 名称</th><th>作用说明</th><th>前后护理</th></tr>
+    </table>
+    <p class="muted">说明：驱虫在疫苗前完成首轮，确保接种时体内无寄生虫干扰免疫。猫三联基础免疫 3 针（每针间隔约 21 天），
+       完成后每年加强 1 针；狂犬需满 3 月龄。此后<strong>体内外驱虫建议每月 1 次</strong>（幼猫期/散养背景可每 2–4 周，按兽医建议）。</p>
+    <div class="disclaimer">⚠️ 医学免责：以上为通用参考程序，<b>实际接种时机需由执业兽医根据猫咪年龄、体重、健康状态确定</b>。
+       若接猫时未满 3 月龄或体弱，请延后并遵医嘱；狂犬疫苗须满 3 月龄方可接种。</div>
+  </section>
+
+  <!-- ===== 5 洗护 ===== -->
+  <section id="care">
+    <h2><span class="num">5</span>日常洗护护理</h2>
+    <p>狸花猫是<b>短毛、皮脂适中、自洁能力强</b>的品种，且长期散养早已习惯"自己打理"。进城后洗护要<b>少而精</b>，
+       过度清洁反而破坏皮肤屏障。</p>
+
+    <h3>洗护周期与方法</h3>
+    <table>
+      <tr><th>项目</th><th>频率</th><th>方法要点</th></tr>
+      <tr><td>全身洗澡</td><td>2–3 个月 1 次（非必要不洗）</td><td>用猫专用沐浴露；水温 38–40℃；全程防应激，洗后彻底吹干防感冒</td></tr>
+      <tr><td>梳毛</td><td>每周 2–3 次</td><td>短毛用橡胶梳/硅胶刷，去浮毛、促循环；换季期加频</td></tr>
+      <tr><td>擦脸/脚</td><td>按需（外出回家后）</td><td>湿巾擦脚掌与脸部，门常开带回灰尘多，进门可简单清理</td></tr>
+    </table>
+    <div class="card warn"><b>注意：</b>过渡期（前 2 周）不建议洗澡！应激 + 未免疫，洗澡极易诱发疾病。可用宠物湿巾局部擦拭。</div>
+
+    <h3>指甲修剪（频率与步骤）</h3>
+    <p><b>频率：</b>每 2–3 周 1 次。幼猫从小适应，未来不抗拒。两名女童可在家长示范后"当小助手"递工具、安抚。</p>
+    <div class="svgbox">
+      <svg viewBox="0 0 640 160" role="img" aria-label="指甲修剪步骤">
+        <g font-size="12" fill="#3a332c" text-anchor="middle">
+          <rect x="20" y="30" width="135" height="100" rx="10" fill="#fbe7d6" stroke="#e8853a"/>
+          <text x="87" y="62">① 抱稳固定</text><text x="87" y="84">侧抱/趴姿</text><text x="87" y="106">轻压脚垫露爪</text>
+          <rect x="175" y="30" width="135" height="100" rx="10" fill="#dcefec" stroke="#5aa9a0"/>
+          <text x="242" y="62">② 找血线</text><text x="242" y="84">透明处剪</text><text x="242" y="106">避开粉色血线</text>
+          <rect x="330" y="30" width="135" height="100" rx="10" fill="#fbe7d6" stroke="#e8853a"/>
+          <text x="397" y="62">③ 斜剪尖角</text><text x="397" y="84">一次少剪</text><text x="397" y="106">不剪到根部</text>
+          <rect x="485" y="30" width="135" height="100" rx="10" fill="#dcefec" stroke="#5aa9a0"/>
+          <text x="552" y="62">④ 奖励安抚</text><text x="552" y="84">零食+夸奖</text><text x="552" y="106">建立好联想</text>
+        </g>
+        <text x="320" y="150" text-anchor="middle" font-size="12" fill="#8a7d70">出血应急处理：用止血粉/玉米淀粉按压，仍不止就医</text>
+      </svg>
+      <div class="cap">图 5 · 指甲修剪四步法</div>
+    </div>
+
+    <h3>耳道清理要点</h3>
+    <ul>
+      <li><b>频率：</b>每 2–4 周检查 1 次，有脏污再清理，勿过度。</li>
+      <li><b>方法：</b>滴猫专用洗耳液，揉耳根 10 秒，让猫甩头，再用棉片擦外耳廓。<b>棉签勿深入耳道。</b></li>
+      <li><b>异常信号：</b>频繁挠耳、甩头、黑褐色分泌物、异味 → 疑似耳螨/中耳炎，及时就医。</li>
+    </ul>
+  </section>
+
+  <!-- ===== 6 应急 ===== -->
+  <section id="emergency">
+    <h2><span class="num">6</span>常见突发应急手册</h2>
+    <p>乡下猫转入城市，新环境 + 未免疫，意外概率上升。以下四类的「识别 → 处理」请家长与稍大女童都要熟悉。</p>
+
+    <div class="svgbox">
+      <svg viewBox="0 0 640 120" role="img" aria-label="应急场景识别">
+        <g font-size="13" fill="#3a332c" text-anchor="middle">
+          <rect x="20" y="25" width="140" height="70" rx="10" fill="#f7dedd" stroke="#d9534f"/>
+          <text x="90" y="58">😣 应激</text><text x="90" y="80" font-size="11">躲藏/拒食</text>
+          <rect x="175" y="25" width="140" height="70" rx="10" fill="#fbe7d6" stroke="#e8853a"/>
+          <text x="245" y="58">🧩 误食异物</text><text x="245" y="80" font-size="11">呕吐/流涎</text>
+          <rect x="330" y="25" width="140" height="70" rx="10" fill="#dcefec" stroke="#5aa9a0"/>
+          <text x="400" y="58">🩹 磕碰受伤</text><text x="400" y="80" font-size="11">跛行/出血</text>
+          <rect x="485" y="25" width="135" height="70" rx="10" fill="#fbe7d6" stroke="#e8853a"/>
+          <text x="552" y="58">🍂 换季不适</text><text x="552" y="80" font-size="11">打喷嚏/掉毛</text>
+        </g>
+      </svg>
+      <div class="cap">图 6 · 四大应急场景识别</div>
+    </div>
+
+    <div class="er-card">
+      <p class="tag">😣 场景一 · 应激反应</p>
+      <p><b>识别：</b>持续躲藏超过 1 天、食欲骤降、腹泻、炸毛、哈气、过度舔毛。</p>
+      <p><b>处理：</b>① 立刻减少刺激（关小声、限制人流、留安全屋）；② 使用费洛蒙扩散剂；③ 少量多餐诱导进食；④ 48h 无改善或恶化→就医。</p>
+    </div>
+    <div class="er-card">
+      <p class="tag">🧩 场景二 · 误食异物 / 中毒</p>
+      <p><b>识别：</b>突然呕吐、流涎、腹痛弓背、疑似吞入线团/小物件、误食禁忌食物或清洁剂。</p>
+      <p><b>处理：</b>① <b>不要催吐</b>（尖锐物/腐蚀性物催吐更伤）；② 保留误食物包装；③ 立即联系兽医/毒物热线；④ 线状物露出口外<b>切勿拉扯</b>，剪断外露部分后送医。</p>
+    </div>
+    <div class="er-card">
+      <p class="tag">🩹 场景三 · 磕碰 / 抓咬伤</p>
+      <p><b>识别：</b>跛行、出血、肿胀、女童被抓咬破皮。</p>
+      <p><b>处理：</b>① 猫伤口：压迫止血、生理盐水冲洗、碘伏消毒，深/大伤口包扎送医；② 人伤口：流动水+肥皂冲洗 15 分钟、碘伏，<b>若猫未接种狂犬疫苗，人需尽快就医评估狂犬暴露</b>；③ 猫坠楼/重创：固定制动、保暖、立即送医。</p>
+    </div>
+    <div class="er-card">
+      <p class="tag">🍂 场景四 · 换季不适</p>
+      <p><b>识别：</b>频繁打喷嚏、流涕、精神差、大量掉毛、皮肤痒。</p>
+      <p><b>处理：</b>① 保暖、保持通风但避开直吹；② 增加梳毛助换毛；③ 观察是否发热/食欲下降，持续 2 天以上或伴眼鼻脓性分泌物→排查猫鼻支等，就医。</p>
+    </div>
+    <div class="disclaimer">📞 建议提前在手机存好：就近宠物医院电话、24h 急诊医院、当地宠物毒物咨询渠道。门常开 + 两孩家庭，意外响应速度决定预后。</div>
+  </section>
+
+  <!-- ===== 7 开销与任务 ===== -->
+  <section id="budget">
+    <h2><span class="num">7</span>月度开销 · 养护任务 · 趣味互动</h2>
+
+    <h3>月度开销明细表（可改价，自动汇总）</h3>
+    <p class="muted">填入你家实际价格，下方自动算出月度与首年总开销。疫苗为一次性大额，已按首年 12 个月摊销展示。</p>
+    <table id="costTable">
+      <tr><th>项目</th><th>月均费用(¥)</th><th>说明</th></tr>
+      <tr><td>猫粮（主食）</td><td><input class="edit" type="number" id="c_food" value="80"></td><td>幼猫粮为主，约 2–4kg/月</td></tr>
+      <tr><td>猫砂</td><td><input class="edit" type="number" id="c_litter" value="40"></td><td>膨润土/豆腐砂混合</td></tr>
+      <tr><td>驱虫（月均）</td><td><input class="edit" type="number" id="c_deworm" value="30"></td><td>体内外合计月摊</td></tr>
+      <tr><td>疫苗（首年摊）</td><td><input class="edit" type="number" id="c_vac" value="50"></td><td>首年约 600 分摊到月</td></tr>
+      <tr><td>用品损耗</td><td><input class="edit" type="number" id="c_sup" value="30"></td><td>猫抓板/玩具/梳子</td></tr>
+      <tr><td>洗护</td><td><input class="edit" type="number" id="c_groom" value="20"></td><td>沐浴露/湿巾/洗耳液</td></tr>
+    </table>
+    <div class="result" id="costResult">修改上方金额即可实时更新。</div>
+
+    <h3>每日 / 每周养护任务清单（可打卡）</h3>
+    <p class="progress" id="taskProg">完成进度：0 / 0</p>
+    <h4>🌞 每日任务</h4>
+    <div id="dailyTasks"></div>
+    <h4>📅 每周任务</h4>
+    <div id="weeklyTasks"></div>
+
+    <h3>适合两名小女孩参与的趣味互动小游戏</h3>
+    <div class="game"><h4>🎯 游戏一：找零食寻宝</h4>
+      <p>把几颗冻干藏在猫爬架不同高度、纸盒里，让两名女孩轮流"发布任务"，训练猫的嗅觉与探索欲。
+         既消耗精力，又建立"小女孩=好事发生"的联想。</p></div>
+    <div class="game"><h4>🪮 游戏二：梳毛时光</h4>
+      <p>家长先示范，再由女孩用硅胶梳轻轻给猫顺毛 3–5 分钟。固定时段（如晚饭后），形成仪式感，
+         同时检查皮肤/耳朵是否异常——把护理变成亲子陪伴。</p></div>
+    <div class="game"><h4>💃 游戏三：逗猫棒舞蹈</h4>
+      <p>一人持逗猫棒画圈/忽上忽下，另一人拍手加油，模拟"猎物"轨迹。锻炼猫反应与肌肉，
+         两孩轮流当"指挥"与"拉拉队"，避免争抢。结束后由女孩给零食奖励，强化正向闭环。</p></div>
+    <div class="card teal"><b>💡 安全贴士：</b>所有游戏以猫自愿参与为前提；猫示警（耳压/甩尾/走开）立即结束。
+       女孩指甲剪短、不戴戒指手链，避免误伤。</div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="disclaimer">
+    📋 本计划书为家庭饲养参考，结合本土狸花猫乡村散养背景编写。<b>所有医疗、用药、接种决策请以执业兽医当面诊断为准。</b>
+    养猫是 10–15 年的承诺，愿这只小狸花在城市里也能自在撒欢 🐾
+  </div>
+  <p>本页为离线单文件，所有计算与打卡数据仅保存在你的浏览器本地（localStorage），不会上传。</p>
+</footer>
+
+<script>
+/* ---------- 数据：疫苗/驱虫时间轴 ---------- */
+const schedule = [
+  {off:3,  name:'体外驱虫（首次）', type:'体外驱虫', desc:'驱除跳蚤、蜱虫、虱子等体外寄生虫', care:'滴后颈皮肤，24h内勿洗澡；戴伊丽莎白圈防舔'},
+  {off:7,  name:'体内驱虫（首次）', type:'体内驱虫', desc:'驱除蛔虫、绦虫、钩虫等体内寄生虫', care:'随餐或空腹喂服；喂后观察有无呕吐腹泻'},
+  {off:14, name:'猫三联 第1针', type:'猫三联(核心疫苗)', desc:'预防猫瘟、猫鼻支、猫杯状病毒', care:'确保已驱虫且健康；接种后留观30分钟'},
+  {off:35, name:'猫三联 第2针', type:'猫三联(核心疫苗)', desc:'加强免疫，建立抗体水平', care:'与上针间隔约21天；继续观察反应'},
+  {off:56, name:'猫三联 第3针', type:'猫三联(核心疫苗)', desc:'完成基础免疫程序', care:'完成后可测抗体；之后每年加强1针'},
+  {off:63, name:'狂犬疫苗', type:'狂犬疫苗', desc:'预防狂犬病（法定，须满3月龄）', care:'需满3月龄；未满则延后至满3月龄再接种'}
+];
+
+function fmt(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';}
+function addDays(base,n){const d=new Date(base);d.setDate(d.getDate()+n);return d;}
+
+/* ---------- 接猫日期推算 ---------- */
+function updateDates(){
+  const v=document.getElementById('adoptDate').value;
+  const sum=document.getElementById('adoptSummary');
+  if(!v){sum.textContent='请选择接猫日期后查看推算结果。';return;}
+  const base=new Date(v+'T00:00:00');
+  // 摘要
+  let html='<b>接猫日：'+fmt(base)+'</b><br>';
+  html+='过渡期第1–7天：'+fmt(base)+' ～ '+fmt(addDays(base,6))+'<br>';
+  html+='疫苗/驱虫首个节点（体外驱虫）：'+fmt(addDays(base,3))+'<br>';
+  html+='猫三联基础免疫完成（第3针）：'+fmt(addDays(base,56))+'<br>';
+  html+='狂犬疫苗（满3月龄前提下）：'+fmt(addDays(base,63));
+  sum.innerHTML=html;
+
+  // 疫苗表
+  const tb=document.getElementById('vacTable');
+  tb.querySelectorAll('tr.r').forEach(r=>r.remove());
+  schedule.forEach(s=>{
+    const d=addDays(base,s.off);
+    const tr=document.createElement('tr');tr.className='r';
+    tr.innerHTML='<td><b>'+fmt(d)+'</b></td><td>第'+s.off+'天</td><td>'+s.name+
+      '</td><td>'+s.type+'</td><td>'+s.desc+'</td><td>'+s.care+'</td>';
+    tb.appendChild(tr);
+  });
+  //  recurring note row
+  // 前 7 天日程（动态日期）
+  const t7=document.getElementById('transitionDays');
+  const days=[
+    [1,'到家安顿','放入安静小房间，备好猫窝+食水+猫砂；不强行抱撸，让它独自探索安全感'],
+    [2,'远远建立信任','人在旁做自己的事，用零食远远投喂，不盯不追不围观'],
+    [3,'体外驱虫(首次)','滴后颈皮肤，24h内不洗澡；开始用逗猫棒远距离互动'],
+    [4,'逐步扩大范围','开放相邻房间；女童可静坐陪伴，不主动抓抱、不追逐'],
+    [5,'熟悉声音气味','播放轻柔人声/日常噪音脱敏；观察大便是否成型'],
+    [6,'短暂接触尝试','尝试 1–2 分钟轻梳毛；评估应激等级，未适应则放慢'],
+    [7,'体内驱虫(首次)','随餐喂服体内驱虫药；综合评估是否开放全屋自由出入']
+  ];
+  let dh='<b>前 7 天居家日程（按接猫日推算）：</b><ol style="margin:8px 0 0">';
+  days.forEach(d=>{dh+='<li><b>第'+d[0]+'天（'+fmt(addDays(base,d[0]-1))+'）：'+d[1]+'</b> — '+d[2]+'</li>';});
+  dh+='</ol>';
+  t7.innerHTML=dh;
+
+  const note=document.createElement('tr');note.className='r';
+  note.innerHTML='<td colspan="2" class="muted">此后长期</td><td>体内外驱虫</td><td>每月1次</td>'+
+    '<td>维持寄生虫防控（散养背景幼猫可每2–4周，遵兽医）</td><td>轮换不同成分，避免耐药</td>';
+  tb.appendChild(note);
+
+  drawTimeline(base);
+}
+
+/* ---------- 疫苗时间轴 SVG ---------- */
+function drawTimeline(base){
+  const svg=document.getElementById('vacTimeline');
+  svg.querySelectorAll('.node').forEach(n=>n.remove());
+  const x0=40, x1=600, n=schedule.length;
+  schedule.forEach((s,i)=>{
+    const x=x0+(x1-x0)*(i/(n-1));
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.setAttribute('class','node');
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',x);c.setAttribute('cy',70);c.setAttribute('r',9);
+    c.setAttribute('fill', i>=3?'#5aa9a0':'#e8853a');
+    g.appendChild(c);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',x);t.setAttribute('y',48);t.setAttribute('text-anchor','middle');
+    t.setAttribute('font-size','11');t.setAttribute('fill','#3a332c');
+    t.textContent=s.type.replace('(核心疫苗)','');
+    g.appendChild(t);
+    const d=document.createElementNS('http://www.w3.org/2000/svg','text');
+    d.setAttribute('x',x);d.setAttribute('y',100);d.setAttribute('text-anchor','middle');
+    d.setAttribute('font-size','10');d.setAttribute('fill','#8a7d70');
+    d.textContent='第'+s.off+'天';
+    g.appendChild(d);
+    svg.appendChild(g);
+  });
+}
+
+/* ---------- 食量计算 ---------- */
+function calcFood(){
+  const w=parseFloat(document.getElementById('wKg').value)||1;
+  const a=parseInt(document.getElementById('aMo').value)||3;
+  let pct = a<6 ? 0.06 : (a<12 ? 0.05 : 0.04);
+  const low=Math.round(w*1000*0.04), high=Math.round(w*1000*pct);
+  let freq, tip;
+  if(a<3){freq='4–5 次/日（幼猫少食多餐）';tip='过渡期可自由采食+定时加餐';}
+  else if(a<6){freq='3–4 次/日';tip='逐步过渡到定时定量';}
+  else if(a<12){freq='2–3 次/日';tip='接近成猫节律';}
+  else{freq='2 次/日';tip='成猫维持量';}
+  const r=document.getElementById('foodResult');
+  r.innerHTML='<b>每日建议食量：</b>约 '+low+'–'+high+' g 干粮（按体重 '+Math.round(pct*100)+'%/日 估算）<br>'+
+    '<b>喂食频次：</b>'+freq+'<br>'+
+    '<b>过渡期口粮：</b>沿用乡下原有食物 + 7天换粮法混入幼猫粮，'+tip+'<br>'+
+    '<b>长期主食：</b>优质幼猫粮为主，每周 2–3 次主食罐/水煮肉，自由饮水常换';
+}
+
+/* ---------- 开销汇总 ---------- */
+function calcCost(){
+  const ids=['c_food','c_litter','c_deworm','c_vac','c_sup','c_groom'];
+  let total=0;
+  ids.forEach(id=>{total+=(parseFloat(document.getElementById(id).value)||0);});
+  const annual=total*12;
+  document.getElementById('costResult').innerHTML=
+    '<b>月度合计：¥'+total.toFixed(0)+'</b>　|　<b>首年预估：¥'+annual.toFixed(0)+'</b>'+
+    '<br><span class="muted">（疫苗已按月摊销；首年实际现金支出会前高后低，含一次性疫苗/用品购置）</span>';
+}
+['c_food','c_litter','c_deworm','c_vac','c_sup','c_groom'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',calcCost);
+});
+
+/* ---------- 任务清单打卡 ---------- */
+const dailyList=[
+  '添粮 + 换新鲜饮水（水碗每日清洗）',
+  '清理猫砂盆（铲屎 1–2 次）',
+  '观察精神/食欲/大便（异常记录）',
+  '陪玩 10–15 分钟（女孩轮流）',
+  '门常开时确认封窗/危险品收纳到位'
+];
+const weeklyList=[
+  '彻底换猫砂 + 消毒猫砂盆',
+  '梳毛 2–3 次（检查皮肤/耳朵）',
+  '擦拭猫窝与食水区',
+  '剪指甲（每 2–3 周，视情况）',
+  '称体重并记录生长曲线',
+  '检查封窗/收纳柜安全'
+];
+function renderTasks(){
+  const store=JSON.parse(localStorage.getItem('catTasks')||'{}');
+  function build(arr,keyPrefix){
+    let html='';
+    arr.forEach((t,i)=>{
+      const id=keyPrefix+i;
+      const done=store[id]?true:false;
+      html+='<label class="task'+(done?' done':'')+'"><input type="checkbox" data-id="'+id+'" '+
+        (done?'checked':'')+'><span>'+t+'</span></label>';
+    });
+    return html;
+  }
+  document.getElementById('dailyTasks').innerHTML=build(dailyList,'d');
+  document.getElementById('weeklyTasks').innerHTML=build(weeklyList,'w');
+  document.querySelectorAll('.task input').forEach(cb=>{
+    cb.addEventListener('change',e=>{
+      const store=JSON.parse(localStorage.getItem('catTasks')||'{}');
+      if(e.target.checked)store[e.target.dataset.id]=1;else delete store[e.target.dataset.id];
+      localStorage.setItem('catTasks',JSON.stringify(store));
+      e.target.parentElement.classList.toggle('done',e.target.checked);
+      updateProg();
+    });
+  });
+  updateProg();
+}
+function updateProg(){
+  const total=dailyList.length+weeklyList.length;
+  const store=JSON.parse(localStorage.getItem('catTasks')||'{}');
+  const done=Object.keys(store).length;
+  document.getElementById('taskProg').textContent='完成进度：'+done+' / '+total;
+}
+
+/* ---------- 初始化 ---------- */
+document.getElementById('adoptDate').addEventListener('change',updateDates);
+window.addEventListener('DOMContentLoaded',()=>{
+  // 默认接猫日期为今天（按本地时区，避免 UTC 偏移差一天）
+  const t=new Date();
+  const localDate=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  document.getElementById('adoptDate').value=localDate;
+  updateDates();calcFood();calcCost();renderTasks();
+});
+</script>
+</body>
+</html>
